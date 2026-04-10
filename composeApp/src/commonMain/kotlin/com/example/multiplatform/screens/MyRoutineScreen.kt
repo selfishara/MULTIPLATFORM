@@ -10,10 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +24,17 @@ import androidx.compose.ui.unit.dp
 import com.example.multiplatform.components.ExerciseItem
 import com.example.multiplatform.state.RoutineState
 
+/**
+ * Screen displaying the user's current workout routine.
+ *
+ * Shows a list of exercises that have been added to the user's routine with
+ * the ability to remove individual exercises. Users can also edit the routine name,
+ * clear the entire routine, and start a workout session. Displays a message when
+ * no exercises have been added yet.
+ *
+ * @param onBack Callback invoked when the user clicks the back button.
+ * @param onStartWorkout Callback invoked when the user starts a workout session.
+ */
 @Composable
 fun MyRoutineScreen(
     onBack: () -> Unit,
@@ -30,6 +42,10 @@ fun MyRoutineScreen(
 ) {
     var routineName by remember { mutableStateOf(RoutineState.name) }
     val routine = RoutineState.routine
+
+    LaunchedEffect(RoutineState.name) {
+        routineName = RoutineState.name
+    }
 
     Column(
         modifier = Modifier
@@ -68,7 +84,6 @@ fun MyRoutineScreen(
             )
         } else {
             LazyColumn(
-                modifier = Modifier.weight(1f, fill = false),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(routine) { exercise ->
@@ -84,19 +99,19 @@ fun MyRoutineScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = onStartWorkout,
+                onClick = { RoutineState.clearRoutine() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Start Workout")
+                Text("Clear Routine")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(
-                onClick = { RoutineState.clearRoutine() },
+                onClick = onStartWorkout,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Clear Routine")
+                Text("Start Workout")
             }
         }
     }

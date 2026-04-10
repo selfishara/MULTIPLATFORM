@@ -4,7 +4,7 @@ package com.example.multiplatform.navigation
  * Navigation configuration for serialization and state management.
  *
  * Configures the serializers module for all Route subtypes used in the application
- * (Home, Exercises, ExerciseDetail, MyRoutine) to enable proper state restoration
+ * (Home, Exercises, ExerciseDetail, MyRoutine, Workout) to enable proper state restoration
  * and navigation stack persistence.
  */
 import androidx.navigation3.runtime.NavKey

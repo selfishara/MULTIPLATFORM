@@ -1,24 +1,20 @@
 package com.example.multiplatform.state
 
-/**
- * Simple state management for the user's workout routine (MVP - temporary solution).
- *
- * Manages a mutable list of exercises that the user has added to their routine.
- * Provides methods to add and remove exercises, preventing duplicates.
- *
- * Note: This is a temporary implementation for MVP. Will be replaced with ViewModel-based
- * state management in future versions.
- */
 import com.example.multiplatform.model.Exercise
 
 object RoutineState {
+
     private val _routine = mutableListOf<Exercise>()
+    private var _name: String = "My Routine"
 
     val routine: List<Exercise>
         get() = _routine
 
+    val name: String
+        get() = _name
+
     fun addExercise(exercise: Exercise) {
-        if (!_routine.any { it.id == exercise.id }) {
+        if (_routine.none { it.id == exercise.id }) {
             _routine.add(exercise)
         }
     }
@@ -29,5 +25,9 @@ object RoutineState {
 
     fun clearRoutine() {
         _routine.clear()
+    }
+
+    fun renameRoutine(newName: String) {
+        _name = newName
     }
 }

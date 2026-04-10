@@ -4,8 +4,9 @@ package com.example.multiplatform.navigation
  * Navigation wrapper that manages the application's navigation flow.
  *
  * Handles the back stack and routes between all screens including Home, Exercises list,
- * Exercise detail view, and My Routine screen. Uses Navigation 3 for managing the
- * navigation state and transitions. Integrates with RoutineState for exercise management.
+ * Exercise detail view, My Routine screen, and Workout mode. Uses Navigation 3 for
+ * managing the navigation state and transitions. Integrates with RoutineState for
+ * exercise management.
  */
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider

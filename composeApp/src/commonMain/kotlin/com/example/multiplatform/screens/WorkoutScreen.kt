@@ -2,7 +2,9 @@ package com.example.multiplatform.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -11,22 +13,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.state.RoutineState
 
+/**
+ * Screen for executing and tracking a workout session.
+ *
+ * Displays the exercises from the user's routine one at a time, allowing the user
+ * to navigate through the workout. Shows exercise details including name, target
+ * muscle group, and instructions, as well as progress through the workout.
+ *
+ * @param onBack Callback invoked when the user clicks the back button.
+ */
 @Composable
 fun WorkoutScreen(
     onBack: () -> Unit
-){
+) {
     val routine = RoutineState.routine
-    val currentExerciseIndex by remember { mutableStateOf(0) }
+    var currentExerciseIndex by remember { mutableStateOf(0) }
 
     Column(
-        modifier = Modifier.fillMaxSize()
-        .padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ){
+    ) {
         Text(
             text = "Workout Mode",
             style = MaterialTheme.typography.headlineMedium
@@ -76,6 +89,8 @@ fun WorkoutScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = onBack) {
                 Text("Back")
