@@ -1,28 +1,34 @@
 package com.example.multiplatform.screens
 
-/**
- * Screen displaying the user's current workout routine.
- *
- * Shows a list of exercises that have been added to the user's routine with
- * the ability to remove individual exercises. Displays a message when no
- * exercises have been added yet.
- *
- * @param onBack Callback invoked when the user clicks the back button.
- */
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.components.ExerciseItem
 import com.example.multiplatform.state.RoutineState
 
 @Composable
 fun MyRoutineScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onStartWorkout: () -> Unit
 ) {
+    var routineName by remember { mutableStateOf(RoutineState.name) }
     val routine = RoutineState.routine
 
     Column(
@@ -35,43 +41,63 @@ fun MyRoutineScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-         Button(onClick = onBack) {
-             Text("Back")
-         }
+        Spacer(modifier = Modifier.height(16.dp))
 
-         if (routine.isEmpty()) {
-             Text("No exercises added yet")
-         } else {
-             LazyColumn(
-                 verticalArrangement = Arrangement.spacedBy(8.dp)
-             ) {
-                 items(routine) { exercise ->
-                     Card {
-                         Column(modifier = Modifier.padding(16.dp)) {
-                             Column(
-                                 modifier = Modifier
-                                     .fillMaxWidth()
-                                     .weight(1f)
-                             ) {
-                                 Text(
-                                     text = exercise.name,
-                                     style = MaterialTheme.typography.titleMedium
-                                 )
-                                 Text(
-                                     text = exercise.muscleGroup,
-                                     style = MaterialTheme.typography.bodyMedium
-                                 )
-                             }
-                             Button(
-                                 onClick = { RoutineState.removeExercise(exercise) },
-                                 modifier = Modifier.align(Alignment.End)
-                             ) {
-                                 Text("Remove")
-                             }
-                         }
-                     }
-                 }
-             }
-         }
+        OutlinedTextField(
+            value = routineName,
+            onValueChange = {
+                routineName = it
+                RoutineState.renameRoutine(it)
+            },
+            label = { Text("Routine name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = onBack) {
+            Text("Back")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (routine.isEmpty()) {
+            Text(
+                text = "No exercises added yet",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f, fill = false),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(routine) { exercise ->
+                    ExerciseItem(
+                        exercise = exercise,
+                        onRemove = {
+                            RoutineState.removeExercise(exercise)
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = onStartWorkout,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Start Workout")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = { RoutineState.clearRoutine() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Clear Routine")
+            }
+        }
     }
 }

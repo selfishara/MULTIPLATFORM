@@ -16,6 +16,7 @@ import com.example.multiplatform.screens.ExerciseDetailScreen
 import com.example.multiplatform.screens.ExercisesScreen
 import com.example.multiplatform.screens.HomeScreen
 import com.example.multiplatform.screens.MyRoutineScreen
+import com.example.multiplatform.screens.WorkoutScreen
 import com.example.multiplatform.state.RoutineState
 
 @Composable
@@ -62,6 +63,17 @@ fun NavigationWrapper() {
 
             entry<Route.MyRoutine> {
                 MyRoutineScreen(
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onStartWorkout = {
+                        backStack.add(Route.Workout)
+                    }
+                )
+            }
+
+            entry<Route.Workout> {
+                WorkoutScreen(
                     onBack = {
                         backStack.removeLastOrNull()
                     }

@@ -23,3 +23,7 @@ sealed class Route : NavKey {
     @Serializable
     data object MyRoutine : Route()
 }
+        @Serializable
+        data object Workout : Route()
+
+
