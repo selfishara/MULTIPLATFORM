@@ -1,5 +1,14 @@
 package com.example.multiplatform.screens
 
+/**
+ * Screen displaying a list of available exercises.
+ *
+ * Shows a scrollable list of exercises with their names and target muscle groups.
+ * Allows users to select an exercise to view its details or return to the previous screen.
+ *
+ * @param onExerciseClick Callback invoked when an exercise is selected, passing the exercise ID.
+ * @param onBack Callback invoked when the user clicks the back button.
+ */
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,18 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
-data class ExerciseUi(
-    val id: String,
-    val name: String,
-    val muscleGroup: String
-)
-
-private val sampleExercises = listOf(
-    ExerciseUi("1", "Push Up", "Chest"),
-    ExerciseUi("2", "Squat", "Legs"),
-    ExerciseUi("3", "Plank", "Core")
-)
+import com.example.multiplatform.data.fakeExercises
 
 @Composable
 fun ExercisesScreen(
@@ -44,13 +42,13 @@ fun ExercisesScreen(
         )
 
         Button(onClick = onBack) {
-            Text("Volver")
+            Text("Back")
         }
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(sampleExercises) { exercise ->
+            items(fakeExercises) { exercise ->
                 Card(
                     modifier = Modifier
                         .fillMaxSize()

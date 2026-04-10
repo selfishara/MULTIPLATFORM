@@ -1,9 +1,20 @@
 package com.example.multiplatform.screens
 
+/**
+ * Main screen of GymSpot Lite.
+ *
+ * From here, the user can access the exercise list
+ * or navigate to their current routine.
+ *
+ * @param onStartClick Action to navigate to the exercises screen.
+ * @param onNavigateToRoutine Action to navigate to the my routine screen.
+ */
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,7 +25,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(
-    onStartClick: () -> Unit
+    onStartClick: () -> Unit,
+    onNavigateToRoutine: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -28,13 +40,21 @@ fun HomeScreen(
             style = MaterialTheme.typography.headlineLarge
         )
 
-        Text(
-            text = "Pantalla inicial de prueba para Navigation 3",
-            style = MaterialTheme.typography.bodyLarge
-        )
+         Text(
+             text = "Initial test screen for Navigation 3",
+             style = MaterialTheme.typography.bodyLarge
+         )
 
-        Button(onClick = onStartClick) {
-            Text("Ver ejercicios")
+         Button(onClick = onStartClick) {
+             Text("Browse Exercises")
+         }
+
+         Spacer(modifier = Modifier.height(16.dp))
+
+         Button(onClick = {
+             onNavigateToRoutine()
+         }) {
+             Text("View My Routine")
         }
     }
 }
