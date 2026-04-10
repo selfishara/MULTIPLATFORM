@@ -41,7 +41,7 @@ fun HomeScreen(
         )
 
          Text(
-             text = "Initial test screen for Navigation 3",
+             text = "Explore exercises and build your workout routine",
              style = MaterialTheme.typography.bodyLarge
          )
 
