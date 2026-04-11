@@ -1,17 +1,19 @@
 package com.example.multiplatform.state
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.multiplatform.model.Exercise
 
 object RoutineState {
 
-    private val _routine = mutableListOf<Exercise>()
-    private var _name: String = "My Routine"
+    private val _routine = mutableStateListOf<Exercise>()
+    var name by mutableStateOf("My Routine")
+        private set
 
     val routine: List<Exercise>
         get() = _routine
-
-    val name: String
-        get() = _name
 
     fun addExercise(exercise: Exercise) {
         if (_routine.none { it.id == exercise.id }) {
@@ -28,6 +30,6 @@ object RoutineState {
     }
 
     fun renameRoutine(newName: String) {
-        _name = newName
+        name = newName
     }
 }

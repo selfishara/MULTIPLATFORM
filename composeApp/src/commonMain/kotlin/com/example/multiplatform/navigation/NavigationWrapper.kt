@@ -27,59 +27,65 @@ fun NavigationWrapper() {
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
-        entryProvider = entryProvider {
-            entry<Route.Home> {
-                HomeScreen(
-                    onStartClick = {
-                        backStack.add(Route.Exercises)
-                    },
-                    onNavigateToRoutine = {
-                        backStack.add(Route.MyRoutine)
-                    }
-                )
-            }
+         entryProvider = entryProvider {
+             entry<Route.Home> {
+                 HomeScreen(
+                     onStartClick = {
+                         backStack.add(Route.Exercises)
+                     },
+                     onNavigateToRoutine = {
+                         backStack.add(Route.MyRoutine)
+                     }
+                 )
+             }
 
-            entry<Route.Exercises> {
-                ExercisesScreen(
-                    onExerciseClick = { exerciseId ->
-                        backStack.add(Route.ExerciseDetail(exerciseId))
-                    },
-                    onBack = {
-                        backStack.removeLastOrNull()
-                    }
-                )
-            }
+             entry<Route.Exercises> {
+                 ExercisesScreen(
+                     onExerciseClick = { exerciseId ->
+                         backStack.add(Route.ExerciseDetail(exerciseId))
+                     },
+                     onAddToRoutine = { exercise ->
+                         RoutineState.addExercise(exercise)
+                     },
+                     onBack = {
+                         backStack.removeLastOrNull()
+                     }
+                 )
+             }
 
-            entry<Route.ExerciseDetail> { key ->
-                ExerciseDetailScreen(
-                    exerciseId = key.exerciseId,
-                    onAddToRoutine = { exercise ->
-                        RoutineState.addExercise(exercise)
-                    },
-                    onBack = {
-                        backStack.removeLastOrNull()
-                    }
-                )
-            }
+             entry<Route.ExerciseDetail> { key ->
+                 ExerciseDetailScreen(
+                     exerciseId = key.exerciseId,
+                     onAddToRoutine = { exercise ->
+                         RoutineState.addExercise(exercise)
+                     },
+                     onViewRoutine = {
+                         backStack.add(Route.MyRoutine)
+                     },
+                     onBack = {
+                         backStack.removeLastOrNull()
+                     }
+                 )
+             }
 
-            entry<Route.MyRoutine> {
-                MyRoutineScreen(
-                    onBack = {
-                        backStack.removeLastOrNull()
-                    },
-                    onStartWorkout = {
-                        backStack.add(Route.Workout)
-                    }
-                )
-            }
+             entry<Route.MyRoutine> {
+                 MyRoutineScreen(
+                     onBack = {
+                         backStack.removeLastOrNull()
+                     },
+                     onStartWorkout = {
+                         backStack.add(Route.Workout)
+                     }
+                 )
+             }
 
-            entry<Route.Workout> {
-                WorkoutScreen(
-                    onBack = {
-                        backStack.removeLastOrNull()
-                    }
-                )
-            }
-        }
+             entry<Route.Workout> {
+                 WorkoutScreen(
+                     onBack = {
+                         backStack.removeLastOrNull()
+                     }
+                 )
+             }
+         }
     )
 }

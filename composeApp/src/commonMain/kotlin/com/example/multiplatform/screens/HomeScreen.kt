@@ -22,12 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.state.RoutineState
 
 @Composable
 fun HomeScreen(
     onStartClick: () -> Unit,
     onNavigateToRoutine: () -> Unit
 ) {
+    val exerciseCount = RoutineState.routine.size
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,13 +37,13 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "GymSpot",
-            style = MaterialTheme.typography.headlineLarge
-        )
+         Text(
+             text = "GymSpot",
+             style = MaterialTheme.typography.headlineLarge
+         )
 
          Text(
-             text = "Initial test screen for Navigation 3",
+             text = "Explore exercises and build your routine",
              style = MaterialTheme.typography.bodyLarge
          )
 
@@ -51,10 +53,10 @@ fun HomeScreen(
 
          Spacer(modifier = Modifier.height(16.dp))
 
-         Button(onClick = {
-             onNavigateToRoutine()
-         }) {
-             Text("View My Routine")
-        }
+          Button(onClick = {
+              onNavigateToRoutine()
+          }) {
+              Text("View My Routine (${exerciseCount})")
+         }
     }
 }

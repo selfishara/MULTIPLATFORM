@@ -10,15 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.components.ExerciseItem
@@ -40,12 +35,8 @@ fun MyRoutineScreen(
     onBack: () -> Unit,
     onStartWorkout: () -> Unit
 ) {
-    var routineName by remember { mutableStateOf(RoutineState.name) }
     val routine = RoutineState.routine
-
-    LaunchedEffect(RoutineState.name) {
-        routineName = RoutineState.name
-    }
+    val routineName = RoutineState.name
 
     Column(
         modifier = Modifier
@@ -61,10 +52,7 @@ fun MyRoutineScreen(
 
         OutlinedTextField(
             value = routineName,
-            onValueChange = {
-                routineName = it
-                RoutineState.renameRoutine(it)
-            },
+            onValueChange = { RoutineState.renameRoutine(it) },
             label = { Text("Routine name") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -109,7 +97,8 @@ fun MyRoutineScreen(
 
             Button(
                 onClick = onStartWorkout,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = routine.isNotEmpty()
             ) {
                 Text("Start Workout")
             }
