@@ -77,3 +77,4 @@ This project is:
 
 Avoid suggesting complex enterprise patterns unless strictly necessary.
 
+

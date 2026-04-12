@@ -1,5 +1,14 @@
 package com.example.multiplatform.components
 
+/**
+ * Reusable card component for displaying an exercise item.
+ *
+ * Used in My Routine screen to show added exercises with remove functionality.
+ * Displays exercise name, target muscle group, and a remove button.
+ *
+ * @param exercise The exercise to display
+ * @param onRemove Callback when remove button is clicked
+ */
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +40,7 @@ fun ExerciseItem(
             )
 
             Text(
-                text = exercise.muscleGroup,
+                text = exercise.muscleGroup.displayName,
                 style = MaterialTheme.typography.bodyMedium
             )
 

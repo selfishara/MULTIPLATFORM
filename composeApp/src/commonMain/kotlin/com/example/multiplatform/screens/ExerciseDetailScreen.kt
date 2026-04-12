@@ -99,7 +99,7 @@ fun ExerciseDetailScreen(
                 )
 
                 Text(
-                    text = "Muscle group: ${exercise.muscleGroup}",
+                    text = "Muscle group: ${exercise.muscleGroup.displayName}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary
                 )

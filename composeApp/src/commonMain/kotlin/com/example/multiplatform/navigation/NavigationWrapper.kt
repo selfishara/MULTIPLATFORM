@@ -3,16 +3,17 @@ package com.example.multiplatform.navigation
 /**
  * Navigation wrapper that manages the application's navigation flow.
  *
- * Handles the back stack and routes between all screens including Home, Exercises list,
- * Exercise detail view, My Routine screen, and Workout mode. Uses Navigation 3 for
- * managing the navigation state and transitions. Integrates with RoutineState for
- * exercise management.
+ * Handles the back stack and routes between all screens including Home, Exercise Categories,
+ * Category Exercises, Exercise detail view, My Routine screen, and Workout mode.
+ * Uses Navigation 3 for managing the navigation state and transitions.
+ * Integrates with RoutineState for exercise management.
  */
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 
+import com.example.multiplatform.screens.CategoryExercisesScreen
 import com.example.multiplatform.screens.ExerciseDetailScreen
 import com.example.multiplatform.screens.ExercisesScreen
 import com.example.multiplatform.screens.HomeScreen
@@ -41,11 +42,20 @@ fun NavigationWrapper() {
 
              entry<Route.Exercises> {
                  ExercisesScreen(
+                     onCategoryClick = { categoryName ->
+                         backStack.add(Route.CategoryExercises(categoryName))
+                     },
+                     onBack = {
+                         backStack.removeLastOrNull()
+                     }
+                 )
+             }
+
+             entry<Route.CategoryExercises> { key ->
+                 CategoryExercisesScreen(
+                     categoryName = key.categoryName,
                      onExerciseClick = { exerciseId ->
                          backStack.add(Route.ExerciseDetail(exerciseId))
-                     },
-                     onAddToRoutine = { exercise ->
-                         RoutineState.addExercise(exercise)
                      },
                      onBack = {
                          backStack.removeLastOrNull()
