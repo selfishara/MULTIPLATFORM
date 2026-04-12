@@ -1,18 +1,7 @@
 package com.example.multiplatform.screens
 
-/**
- * Exercises categories browser screen.
- *
- * Displays all available muscle group categories as large, interactive cards.
- * Users can select a category to view exercises in that group.
- * No direct exercise additions here - users must view exercise details first.
- *
- * @param onCategoryClick Callback when a category is selected, passing the category name.
- * @param onBack Callback when the user clicks the back button (via TopBar).
- */
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,9 +19,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.components.CategoryCard
-import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Categories browser screen.
+ *
+ * Displays all available muscle group categories as large, interactive cards.
+ * Users can select a category to view exercises in that group.
+ *
+ * @param onCategoryClick Callback when a category is selected, passing the category name.
+ * @param onBack Callback when the user clicks the back button.
+ */
 @Composable
 fun ExercisesScreen(
     onCategoryClick: (String) -> Unit,
@@ -43,13 +40,12 @@ fun ExercisesScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Top bar with back button
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.primary,
             shadowElevation = 4.dp
         ) {
-            Row(
+            androidx.compose.foundation.layout.Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -62,6 +58,7 @@ fun ExercisesScreen(
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
+
                 Text(
                     text = "Categories",
                     style = MaterialTheme.typography.headlineSmall,
@@ -78,7 +75,6 @@ fun ExercisesScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(categories) { category ->
-                val exerciseCount = fakeExercises.count { it.muscleGroup == category }
                 CategoryCard(
                     category = category,
                     onClick = { onCategoryClick(category.displayName) }

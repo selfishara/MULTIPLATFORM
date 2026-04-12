@@ -1,30 +1,13 @@
 package com.example.multiplatform.components
 
-/**
- * Reusable card component for displaying a muscle group category.
- *
- * Features:
- * - Large, clickable card layout with category icon
- * - Exercise counter showing how many exercises in category
- * - Smooth hover/press effects with scale animation
- * - Elevation changes on interaction
- * - Material Design 3 styling
- *
- * @param category The MuscleGroup category to display
- * @param exerciseCount Number of exercises in this category
- * @param onClick Callback when the card is clicked
- */
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +24,18 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Reusable card component for displaying a muscle group category.
+ *
+ * Features:
+ * - Large clickable card layout
+ * - Category icon and name
+ * - Press animation for a more interactive feel
+ * - Clean visual style without counters or arrows
+ *
+ * @param category The MuscleGroup category to display.
+ * @param onClick Callback when the card is clicked.
+ */
 @Composable
 fun CategoryCard(
     category: MuscleGroup,

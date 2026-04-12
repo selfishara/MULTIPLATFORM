@@ -83,9 +83,9 @@ fun NavigationWrapper() {
                      onBack = {
                          backStack.removeLastOrNull()
                      },
-                     onStartWorkout = {
-                         backStack.add(Route.Workout)
-                     }
+                     //onStartWorkout = {
+                        // backStack.add(Route.Workout)
+                     //}
                  )
              }
 
