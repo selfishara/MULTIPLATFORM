@@ -3,7 +3,15 @@ package com.example.multiplatform.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,15 +34,16 @@ import com.example.multiplatform.state.RoutineState
  */
 @Composable
 fun MyRoutineScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onStartWorkout: () -> Unit,
+    onEditRoutine: () -> Unit = {}
 ) {
     var routineName by remember { mutableStateOf(RoutineState.name) }
     val routine = RoutineState.routine
+    val routineName = RoutineState.name
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
 
         // 🔤 Editable name

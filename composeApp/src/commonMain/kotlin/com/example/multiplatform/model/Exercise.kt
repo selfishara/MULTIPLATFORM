@@ -5,12 +5,12 @@ package com.example.multiplatform.model
  *
  * @property id Unique identifier of the exercise.
  * @property name Visible name of the exercise.
- * @property muscleGroup Main muscle group targeted.
+ * @property muscleGroup Main muscle group targeted (categorization).
  * @property instructions Basic execution description.
  */
 data class Exercise(
     val id: String,
     val name: String,
-    val muscleGroup: String,
+    val muscleGroup: MuscleGroup,
     val instructions: String,
 )

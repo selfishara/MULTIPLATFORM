@@ -25,7 +25,7 @@ object RoutineState {
 
 
     fun addExercise(exercise: Exercise) {
-        if (!_routine.any { it.id == exercise.id }) {
+        if (_routine.none { it.id == exercise.id }) {
             _routine.add(exercise)
         }
     }

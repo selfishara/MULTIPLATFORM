@@ -3,8 +3,8 @@ package com.example.multiplatform.screens
 /**
  * Main screen of GymSpot Lite.
  *
- * From here, the user can access the exercise list
- * or navigate to their current routine.
+ * Entry point where users can access the exercise list to explore and add exercises.
+ * Routine icon in the top bar allows quick access to the current routine.
  *
  * @param onStartClick Action to navigate to the exercises screen.
  * @param onNavigateToRoutine Action to navigate to the my routine screen.
@@ -22,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.components.TopBar
+import com.example.multiplatform.state.RoutineState
 
 @Composable
 fun HomeScreen(
@@ -29,15 +31,12 @@ fun HomeScreen(
     onNavigateToRoutine: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "GymSpot",
-            style = MaterialTheme.typography.headlineLarge
+        TopBar(
+            title = "GymSpot",
+            showRoutineIcon = true,
+            onRoutineIconClick = onNavigateToRoutine
         )
 
          Text(
@@ -45,16 +44,11 @@ fun HomeScreen(
              style = MaterialTheme.typography.bodyLarge
          )
 
-         Button(onClick = onStartClick) {
-             Text("Browse Exercises")
-         }
+            Spacer(modifier = Modifier.height(32.dp))
 
-         Spacer(modifier = Modifier.height(16.dp))
-
-         Button(onClick = {
-             onNavigateToRoutine()
-         }) {
-             Text("View My Routine")
+            Button(onClick = onStartClick) {
+                Text("Explore")
+            }
         }
     }
 }
