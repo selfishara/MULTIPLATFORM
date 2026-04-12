@@ -1,23 +1,16 @@
 package com.example.multiplatform.components
 
 /**
- * Reusable card component for displaying an exercise item.
+ * Reusable composable for displaying an exercise item in a list or card format.
  *
- * Used in My Routine screen to show added exercises with remove functionality.
- * Displays exercise name, target muscle group, and a remove button.
+ * Displays the exercise name and target muscle group with a remove button.
+ * Used in MyRoutineScreen to avoid code duplication.
  *
- * @param exercise The exercise to display
- * @param onRemove Callback when remove button is clicked
+ * @param exercise The exercise data to display.
+ * @param onRemove Callback invoked when the remove button is clicked.
  */
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,7 +33,7 @@ fun ExerciseItem(
             )
 
             Text(
-                text = exercise.muscleGroup.displayName,
+                text = exercise.muscleGroup,
                 style = MaterialTheme.typography.bodyMedium
             )
 

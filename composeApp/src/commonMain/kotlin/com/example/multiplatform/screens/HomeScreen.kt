@@ -39,17 +39,10 @@ fun HomeScreen(
             onRoutineIconClick = onNavigateToRoutine
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Explore exercises and build your routine",
-                style = MaterialTheme.typography.bodyLarge
-            )
+         Text(
+             text = "Explore exercises and build your workout routine",
+             style = MaterialTheme.typography.bodyLarge
+         )
 
             Spacer(modifier = Modifier.height(32.dp))
 
