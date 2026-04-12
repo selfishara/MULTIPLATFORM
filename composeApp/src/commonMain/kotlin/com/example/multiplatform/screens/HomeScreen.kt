@@ -46,7 +46,7 @@ fun HomeScreen(
          )
 
          Button(onClick = onStartClick) {
-             Text("Browse Exercises")
+             Text("GET STARTED")
          }
 
          Spacer(modifier = Modifier.height(16.dp))

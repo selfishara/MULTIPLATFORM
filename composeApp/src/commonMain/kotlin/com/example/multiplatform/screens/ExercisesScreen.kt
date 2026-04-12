@@ -63,7 +63,7 @@ fun ExercisesScreen(
                     )
                 }
                 Text(
-                    text = "Exercise Categories",
+                    text = "Categories",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.padding(start = 8.dp)
@@ -81,7 +81,6 @@ fun ExercisesScreen(
                 val exerciseCount = fakeExercises.count { it.muscleGroup == category }
                 CategoryCard(
                     category = category,
-                    exerciseCount = exerciseCount,
                     onClick = { onCategoryClick(category.displayName) }
                 )
             }
