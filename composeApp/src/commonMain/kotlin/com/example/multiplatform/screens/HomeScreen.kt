@@ -1,20 +1,11 @@
 package com.example.multiplatform.screens
 
-/**
- * Main screen of GymSpot Lite.
- *
- * From here, the user can access the exercise list
- * or navigate to their current routine.
- *
- * @param onStartClick Action to navigate to the exercises screen.
- * @param onNavigateToRoutine Action to navigate to the my routine screen.
- */
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,7 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.components.TopBar
 
+/**
+ * Main screen of GymSpot Lite.
+ *
+ * From here, the user can start exploring exercise categories
+ * or navigate to the current routine.
+ *
+ * @param onStartClick Action to navigate to the categories screen.
+ * @param onNavigateToRoutine Action to navigate to the my routine screen.
+ */
 @Composable
 fun HomeScreen(
     onStartClick: () -> Unit,
@@ -31,30 +32,37 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "GymSpot",
-            style = MaterialTheme.typography.headlineLarge
+        TopBar(
+            title = "GymSpot",
+            showRoutineIcon = true,
+            onRoutineIconClick = onNavigateToRoutine
         )
 
-         Text(
-             text = "Explore exercises and build your workout routine",
-             style = MaterialTheme.typography.bodyLarge
-         )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
-         Button(onClick = onStartClick) {
-             Text("Browse Exercises")
-         }
+        ) {
+            Text(
+                text = "Explore exercises and build your workout routine",
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-         Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-         Button(onClick = {
-             onNavigateToRoutine()
-         }) {
-             Text("View My Routine")
+            Button(onClick = onStartClick) {
+                Text("Explore")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = onNavigateToRoutine) {
+                Text("View My Routine")
+            }
         }
     }
 }
