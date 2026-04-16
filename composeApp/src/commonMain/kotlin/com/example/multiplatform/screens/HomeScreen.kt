@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.components.TopBar
 
 /**
  * Main screen of GymSpot Lite.
@@ -31,32 +32,37 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "GymSpot",
-            style = MaterialTheme.typography.headlineLarge
+        TopBar(
+            title = "GymSpot",
+            showRoutineIcon = true,
+            onRoutineIconClick = onNavigateToRoutine
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
-        Text(
-            text = "Explore exercises and build your workout routine",
-            style = MaterialTheme.typography.bodyLarge
-        )
+        ) {
+            Text(
+                text = "Explore exercises and build your workout routine",
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Button(onClick = onStartClick) {
-            Text("Explore")
-        }
+            Button(onClick = onStartClick) {
+                Text("Explore")
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onNavigateToRoutine) {
-            Text("View My Routine")
+            Button(onClick = onNavigateToRoutine) {
+                Text("View My Routine")
+            }
         }
     }
 }
