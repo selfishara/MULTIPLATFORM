@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,17 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.model.Exercise
-import com.example.multiplatform.model.MuscleGroup
 
 @Composable
-fun ExerciseItem(
+fun ExercisePreviewCard(
     exercise: Exercise,
-    onRemove: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val accent = exerciseAccent(exercise.muscleGroup)
 
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -54,10 +51,10 @@ fun ExerciseItem(
                 modifier = Modifier.size(52.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = exercise.muscleGroup.icon,
-                        contentDescription = null,
-                        tint = accent
+                    Text(
+                        text = exercise.muscleGroup.displayName.take(1),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = accent
                     )
                 }
             }
@@ -87,24 +84,22 @@ fun ExerciseItem(
                 )
             }
 
-            IconButton(onClick = onRemove) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove exercise",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+            Text(
+                text = "View",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
-private fun exerciseAccent(muscleGroup: MuscleGroup): Color {
+private fun exerciseAccent(muscleGroup: com.example.multiplatform.model.MuscleGroup): Color {
     return when (muscleGroup) {
-        MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary
-        MuscleGroup.LEGS -> MaterialTheme.colorScheme.secondary
-        MuscleGroup.BACK -> MaterialTheme.colorScheme.tertiary
-        MuscleGroup.SHOULDERS -> MaterialTheme.colorScheme.error
-        MuscleGroup.CORE -> MaterialTheme.colorScheme.primary
-        MuscleGroup.ARMS -> MaterialTheme.colorScheme.secondary
+        com.example.multiplatform.model.MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary
+        com.example.multiplatform.model.MuscleGroup.LEGS -> MaterialTheme.colorScheme.secondary
+        com.example.multiplatform.model.MuscleGroup.BACK -> MaterialTheme.colorScheme.tertiary
+        com.example.multiplatform.model.MuscleGroup.SHOULDERS -> MaterialTheme.colorScheme.error
+        com.example.multiplatform.model.MuscleGroup.CORE -> MaterialTheme.colorScheme.primary
+        com.example.multiplatform.model.MuscleGroup.ARMS -> MaterialTheme.colorScheme.secondary
     }
 }
