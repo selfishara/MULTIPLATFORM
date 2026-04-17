@@ -24,11 +24,23 @@ import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.Exercise
 import com.example.multiplatform.state.RoutineState
 
+/**
+ * Screen displaying detailed information about a specific exercise.
+ *
+ * Shows exercise details including name, target muscle group, and execution instructions.
+ * Provides an option to add the exercise to the user's routine. Back navigation and
+ * routine access are handled through the TopBar.
+ *
+ * @param exerciseId The unique identifier of the exercise to display.
+ * @param onAddToRoutine Callback invoked when the user adds the exercise to their routine.
+ * @param onNavigateToRoutine Callback invoked when the user clicks the routine icon.
+ * @param onBack Callback invoked when the user clicks the back button.
+ */
 @Composable
 fun ExerciseDetailScreen(
     exerciseId: String,
     onAddToRoutine: (Exercise) -> Unit,
-    onViewRoutine: () -> Unit,
+    onNavigateToRoutine: () -> Unit,
     onBack: () -> Unit
 ) {
     val exercise = fakeExercises.find { it.id == exerciseId }

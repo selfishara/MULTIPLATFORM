@@ -19,11 +19,24 @@ import com.example.multiplatform.components.TopBar
 import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Screen displaying all exercises in a specific muscle group category.
+ *
+ * Shows a list of exercises for the selected category. Users can click on an exercise
+ * to view its details and add it to their routine. No direct "Add" button here -
+ * all additions happen from the ExerciseDetailScreen.
+ *
+ * @param categoryName The name of the selected muscle group category.
+ * @param onExerciseClick Callback when an exercise is selected, passing the exercise ID.
+ * @param onBack Callback when the user clicks the back button.
+ * @param onNavigateToRoutine Callback when the user clicks the routine icon in the top bar.
+ */
 @Composable
 fun CategoryExercisesScreen(
     categoryName: String,
     onExerciseClick: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToRoutine: () -> Unit
 ) {
     val category = MuscleGroup.entries.find { it.displayName == categoryName }
     val exercisesInCategory = if (category != null) {

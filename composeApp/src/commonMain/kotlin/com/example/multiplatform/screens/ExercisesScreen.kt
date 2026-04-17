@@ -3,7 +3,6 @@ package com.example.multiplatform.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,10 +19,21 @@ import com.example.multiplatform.components.TopBar
 import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Categories browser screen.
+ *
+ * Displays all available muscle group categories as large, interactive cards.
+ * Users can select a category to view exercises in that group.
+ *
+ * @param onCategoryClick Callback when a category is selected, passing the category name.
+ * @param onBack Callback when the user clicks the back button.
+ * @param onNavigateToRoutine Callback when the user clicks the routine icon in the top bar.
+ */
 @Composable
 fun ExercisesScreen(
     onCategoryClick: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToRoutine: () -> Unit
 ) {
     val categories = MuscleGroup.entries
     val totalExercises = fakeExercises.size

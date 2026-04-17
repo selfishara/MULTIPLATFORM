@@ -22,6 +22,15 @@ import androidx.compose.ui.unit.dp
 import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Main screen of GymSpot Lite.
+ *
+ * From here, the user can start exploring exercise categories
+ * or navigate to the current routine.
+ *
+ * @param onStartClick Action to navigate to the categories screen.
+ * @param onNavigateToRoutine Action to navigate to the my routine screen.
+ */
 @Composable
 fun HomeScreen(
     onStartClick: () -> Unit,

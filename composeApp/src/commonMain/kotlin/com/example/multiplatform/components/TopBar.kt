@@ -25,7 +25,9 @@ fun TopBar(
     showBackIcon: Boolean = false,
     onBackClick: () -> Unit = {},
     showRoutineIcon: Boolean = false,
-    onRoutineIconClick: () -> Unit = {}
+    onRoutineIconClick: () -> Unit = {},
+    showBackIcon: Boolean = false,
+    onBackClick: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),

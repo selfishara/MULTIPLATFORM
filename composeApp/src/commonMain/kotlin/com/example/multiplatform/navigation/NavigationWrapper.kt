@@ -47,6 +47,9 @@ fun NavigationWrapper() {
                      },
                      onBack = {
                          backStack.removeLastOrNull()
+                     },
+                     onNavigateToRoutine = {
+                         backStack.add(Route.MyRoutine)
                      }
                  )
              }
@@ -59,6 +62,9 @@ fun NavigationWrapper() {
                      },
                      onBack = {
                          backStack.removeLastOrNull()
+                     },
+                     onNavigateToRoutine = {
+                         backStack.add(Route.MyRoutine)
                      }
                  )
              }
@@ -69,7 +75,7 @@ fun NavigationWrapper() {
                      onAddToRoutine = { exercise ->
                          RoutineState.addExercise(exercise)
                      },
-                     onViewRoutine = {
+                     onNavigateToRoutine = {
                          backStack.add(Route.MyRoutine)
                      },
                      onBack = {
@@ -83,9 +89,9 @@ fun NavigationWrapper() {
                      onBack = {
                          backStack.removeLastOrNull()
                      },
-                     onStartWorkout = {
-                         backStack.add(Route.Workout)
-                     }
+                     //onStartWorkout = {
+                        // backStack.add(Route.Workout)
+                     //}
                  )
              }
 

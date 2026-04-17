@@ -20,10 +20,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.model.MuscleGroup
 
+/**
+ * Reusable card component for displaying a muscle group category.
+ *
+ * Features:
+ * - Large clickable card layout
+ * - Category icon and name
+ * - Press animation for a more interactive feel
+ * - Clean visual style without counters or arrows
+ *
+ * @param category The MuscleGroup category to display.
+ * @param onClick Callback when the card is clicked.
+ */
 @Composable
 fun CategoryCard(
     category: MuscleGroup,
-    exerciseCount: Int,
     onClick: () -> Unit
 ) {
     val accent = categoryAccent(category)
