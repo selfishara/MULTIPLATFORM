@@ -2,40 +2,27 @@ package com.example.multiplatform.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.components.TopBar
 import com.example.multiplatform.state.RoutineState
 
-/**
- * Screen for executing and tracking a workout session.
- *
- * Displays exercises from the user's routine one at a time, allowing navigation through
- * the workout. Shows exercise details including name, target muscle group, and instructions,
- * as well as progress through the workout. Back navigation is handled by the TopBar.
- *
- * @param onBack Callback invoked when the user clicks the back button (via TopBar).
- */
 @Composable
 fun WorkoutScreen(
     onBack: () -> Unit
@@ -43,119 +30,133 @@ fun WorkoutScreen(
     val routine = RoutineState.routine
     var currentExerciseIndex by remember { mutableStateOf(0) }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Top bar with back button
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary,
-            shadowElevation = 4.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-                Text(
-                    text = "Workout",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-        }
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopBar(
+            title = "Workout",
+            subtitle = if (routine.isEmpty()) "No exercises ready" else "Step through your routine",
+            showBackIcon = true,
+            onBackClick = onBack
+        )
 
         if (routine.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Your routine is empty",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Add exercises to start a workout",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Your routine is empty",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Add exercises from Explore before starting a workout.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         } else {
+            val currentExercise = routine[currentExerciseIndex]
+            val progress = (currentExerciseIndex + 1) / routine.size.toFloat()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Progress section
-                val progress = (currentExerciseIndex + 1) / routine.size.toFloat()
-                Text(
-                    text = "Exercise ${currentExerciseIndex + 1} of ${routine.size}",
-                    style = MaterialTheme.typography.labelSmall
-                )
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Exercise ${currentExerciseIndex + 1} of ${routine.size}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = currentExercise.name,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = currentExercise.muscleGroup.displayName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = currentExercise.instructions,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
-                // Exercise details
-                val currentExercise = routine[currentExerciseIndex]
-
-                Text(
-                    text = currentExercise.name,
-                    style = MaterialTheme.typography.displaySmall
-                )
-
-                Text(
-                    text = "Muscle group: ${currentExercise.muscleGroup}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = currentExercise.instructions,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Navigation buttons
                 if (currentExerciseIndex < routine.lastIndex) {
                     Button(
                         onClick = { currentExerciseIndex++ },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Next Exercise")
+                        Text("Next exercise")
                     }
                 } else {
-                    Text(
-                        text = "✓ Workout Completed!",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        Text(
+                            text = "Workout complete",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(18.dp)
+                        )
+                    }
 
-                    Button(
+                    OutlinedButton(
                         onClick = onBack,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Finish Workout")
+                        Text("Finish workout")
                     }
                 }
             }
