@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.model.Exercise
+import com.example.multiplatform.model.MuscleGroup
 
 @Composable
 fun ExercisePreviewCard(
@@ -93,13 +94,14 @@ fun ExercisePreviewCard(
     }
 }
 
-private fun exerciseAccent(muscleGroup: com.example.multiplatform.model.MuscleGroup): Color {
+@Composable
+private fun exerciseAccent(muscleGroup: MuscleGroup): Color {
     return when (muscleGroup) {
-        com.example.multiplatform.model.MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary
-        com.example.multiplatform.model.MuscleGroup.LEGS -> MaterialTheme.colorScheme.secondary
-        com.example.multiplatform.model.MuscleGroup.BACK -> MaterialTheme.colorScheme.tertiary
-        com.example.multiplatform.model.MuscleGroup.SHOULDERS -> MaterialTheme.colorScheme.error
-        com.example.multiplatform.model.MuscleGroup.CORE -> MaterialTheme.colorScheme.primary
-        com.example.multiplatform.model.MuscleGroup.ARMS -> MaterialTheme.colorScheme.secondary
+        MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary
+        MuscleGroup.LEGS -> MaterialTheme.colorScheme.secondary
+        MuscleGroup.BACK -> MaterialTheme.colorScheme.tertiary
+        MuscleGroup.SHOULDERS -> MaterialTheme.colorScheme.error
+        MuscleGroup.CORE -> MaterialTheme.colorScheme.primary
+        MuscleGroup.ARMS -> MaterialTheme.colorScheme.secondary
     }
 }

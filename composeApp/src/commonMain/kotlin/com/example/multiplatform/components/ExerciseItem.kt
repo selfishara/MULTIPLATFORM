@@ -98,6 +98,7 @@ fun ExerciseItem(
     }
 }
 
+@Composable
 private fun exerciseAccent(muscleGroup: MuscleGroup): Color {
     return when (muscleGroup) {
         MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary

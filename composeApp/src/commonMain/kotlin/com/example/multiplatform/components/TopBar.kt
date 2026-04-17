@@ -25,10 +25,8 @@ fun TopBar(
     showBackIcon: Boolean = false,
     onBackClick: () -> Unit = {},
     showRoutineIcon: Boolean = false,
-    onRoutineIconClick: () -> Unit = {},
-    showBackIcon: Boolean = false,
-    onBackClick: () -> Unit = {}
-) {
+    onRoutineIconClick: () -> Unit = {}
+){
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,

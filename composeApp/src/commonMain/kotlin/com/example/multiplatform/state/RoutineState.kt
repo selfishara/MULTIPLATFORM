@@ -12,20 +12,22 @@ package com.example.multiplatform.state
  */
 import com.example.multiplatform.model.Exercise
 
-object RoutineState {
-    private val _routine = mutableListOf<Exercise>()
-    private var _name : String = "My Routine"
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
+object RoutineState {
+
+    private val _routine = mutableStateListOf<Exercise>()
+    var name by mutableStateOf("My Routine")
+        private set
 
     val routine: List<Exercise>
         get() = _routine
 
-    val name: String
-        get() = _name
-
-
     fun addExercise(exercise: Exercise) {
-        if (!_routine.any { it.id == exercise.id }) {
+        if (_routine.none { it.id == exercise.id }) {
             _routine.add(exercise)
         }
     }
@@ -38,7 +40,7 @@ object RoutineState {
         _routine.clear()
     }
 
-    fun renameRoutine(newName: String){
-        _name = newName
+    fun renameRoutine(newName: String) {
+        name = newName
     }
 }

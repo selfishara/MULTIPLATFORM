@@ -30,11 +30,13 @@ import com.example.multiplatform.model.MuscleGroup
  * - Clean visual style without counters or arrows
  *
  * @param category The MuscleGroup category to display.
+ * @param exerciseCount The number of exercises in this category.
  * @param onClick Callback when the card is clicked.
  */
 @Composable
 fun CategoryCard(
     category: MuscleGroup,
+    exerciseCount: Int,
     onClick: () -> Unit
 ) {
     val accent = categoryAccent(category)
@@ -113,6 +115,7 @@ fun CategoryCard(
     }
 }
 
+@Composable
 private fun categoryAccent(category: MuscleGroup): Color {
     return when (category) {
         MuscleGroup.CHEST -> MaterialTheme.colorScheme.primary
