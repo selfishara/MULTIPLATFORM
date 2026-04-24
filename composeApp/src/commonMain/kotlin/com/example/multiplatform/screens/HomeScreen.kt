@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.multiplatform.data.fakeExercises
 import com.example.multiplatform.model.MuscleGroup
 
 /**
@@ -36,7 +35,7 @@ fun HomeScreen(
     onStartClick: () -> Unit,
     onNavigateToRoutine: () -> Unit
 ) {
-    val totalExercises = fakeExercises.size
+    val totalExercises = 0
     val totalGroups = MuscleGroup.entries.size
 
     Column(

@@ -3,7 +3,7 @@ package com.example.multiplatform.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,30 +20,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.model.MuscleGroup
 
-/**
- * Reusable card component for displaying a muscle group category.
- *
- * Features:
- * - Large clickable card layout
- * - Category icon and name
- * - Press animation for a more interactive feel
- * - Clean visual style without counters or arrows
- *
- * @param category The MuscleGroup category to display.
- * @param exerciseCount The number of exercises in this category.
- * @param onClick Callback when the card is clicked.
- */
 @Composable
 fun CategoryCard(
     category: MuscleGroup,
-    exerciseCount: Int,
     onClick: () -> Unit
 ) {
     val accent = categoryAccent(category)
 
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(width = 160.dp, height = 160.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -51,66 +39,32 @@ fun CategoryCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                color = accent.copy(alpha = 0.16f),
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.size(56.dp)
             ) {
-                Surface(
-                    color = accent.copy(alpha = 0.16f),
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier.size(52.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            text = category.displayName.take(1),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = accent
-                        )
-                    }
-                }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(999.dp)
-                ) {
+                Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "$exerciseCount",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        text = category.displayName.take(1),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = accent
                     )
                 }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = category.displayName,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Text(
-                    text = categorySubtitle(category),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Surface(
-                color = accent,
-                shape = RoundedCornerShape(999.dp)
-            ) {
-                Text(
-                    text = "Open category",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
-                )
-            }
+            Text(
+                text = category.displayName,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(top = 12.dp)
+            )
         }
     }
 }
@@ -124,16 +78,5 @@ private fun categoryAccent(category: MuscleGroup): Color {
         MuscleGroup.SHOULDERS -> MaterialTheme.colorScheme.error
         MuscleGroup.CORE -> MaterialTheme.colorScheme.primary
         MuscleGroup.ARMS -> MaterialTheme.colorScheme.secondary
-    }
-}
-
-private fun categorySubtitle(category: MuscleGroup): String {
-    return when (category) {
-        MuscleGroup.CHEST -> "Push-focused work for upper body strength"
-        MuscleGroup.LEGS -> "Build a solid lower-body base"
-        MuscleGroup.BACK -> "Posture, pulling and upper-back control"
-        MuscleGroup.SHOULDERS -> "Overhead strength and stability"
-        MuscleGroup.CORE -> "Stability and control for the whole body"
-        MuscleGroup.ARMS -> "Direct work for biceps and triceps"
     }
 }

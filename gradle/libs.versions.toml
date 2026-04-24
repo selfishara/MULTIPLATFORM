@@ -19,6 +19,13 @@ multiplatform-nav3-ui = "1.0.0-alpha06"
 kotlinx-serialization = "1.10.0"
 composeIcons = "1.7.3"
 
+retrofit = "2.11.0"
+okhttp = "4.12.0"
+gson = "2.10.1"
+
+ktor = "3.4.2"
+
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -42,6 +49,14 @@ jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:naviga
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 composeMaterialIconsCore = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeIcons" }
 composeMaterialIconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "composeIcons" }
+retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -16,17 +16,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.components.ExercisePreviewCard
 import com.example.multiplatform.components.TopBar
-import com.example.multiplatform.data.fakeExercises
+import com.example.multiplatform.model.Exercise
 import com.example.multiplatform.model.MuscleGroup
 
 /**
  * Screen displaying all exercises in a specific muscle group category.
  *
  * Shows a list of exercises for the selected category. Users can click on an exercise
- * to view its details and add it to their routine. No direct "Add" button here -
- * all additions happen from the ExerciseDetailScreen.
+ * to view its details. No direct "Add" button here - all additions happen from the
+ * ExerciseDetailScreen.
  *
  * @param categoryName The name of the selected muscle group category.
+ * @param exercises The full list of exercises available in the app.
  * @param onExerciseClick Callback when an exercise is selected, passing the exercise ID.
  * @param onBack Callback when the user clicks the back button.
  * @param onNavigateToRoutine Callback when the user clicks the routine icon in the top bar.
@@ -34,23 +35,21 @@ import com.example.multiplatform.model.MuscleGroup
 @Composable
 fun CategoryExercisesScreen(
     categoryName: String,
+    exercises: List<Exercise>,
     onExerciseClick: (String) -> Unit,
     onBack: () -> Unit,
     onNavigateToRoutine: () -> Unit
 ) {
     val category = MuscleGroup.entries.find { it.displayName == categoryName }
-    val exercisesInCategory = if (category != null) {
-        fakeExercises.filter { it.muscleGroup == category }
-    } else {
-        emptyList()
-    }
+    val exercisesInCategory = exercises.filter { it.muscleGroup == category }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopBar(
             title = categoryName,
-            subtitle = "Exercises in this category",
             showBackIcon = true,
-            onBackClick = onBack
+            onBackClick = onBack,
+            showRoutineIcon = true,
+            onRoutineIconClick = onNavigateToRoutine
         )
 
         if (exercisesInCategory.isEmpty()) {

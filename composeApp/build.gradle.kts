@@ -45,6 +45,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.retrofit.core)
+            implementation(libs.retrofit.gson)
+            implementation(libs.okhttp.core)
+            implementation(libs.ktor.client.cio)
         }
 
         commonMain.dependencies {
@@ -60,6 +64,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.kotlinx.serialization.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         commonTest.dependencies {
@@ -69,6 +76,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.client.cio)
+
         }
     }
 }
@@ -101,6 +110,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
 }
 
 dependencies {
