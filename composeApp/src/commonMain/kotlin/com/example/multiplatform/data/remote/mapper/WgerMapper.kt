@@ -2,32 +2,37 @@ package com.example.multiplatform.data.remote.mapper
 
 import com.example.multiplatform.data.remote.dto.WgerExerciseDto
 import com.example.multiplatform.model.Exercise
+import com.example.multiplatform.model.ExerciseLanguage
 import com.example.multiplatform.model.MuscleGroup
 
 object WgerMapper {
 
-    fun toDomain(dto: WgerExerciseDto): Exercise {
-        val bestTranslation = dto.translations.firstOrNull {
-            !it.name.isNullOrBlank() || !it.description.isNullOrBlank()
+    fun toDomain(
+        dto: WgerExerciseDto,
+        preferredLanguage: ExerciseLanguage
+    ): Exercise {
+        val selectedTranslation = dto.translations.first {
+            it.language == preferredLanguage.wgerLanguageId
         }
-
-        val resolvedName =
-            bestTranslation?.name?.takeIf { it.isNotBlank() }
-                ?: bestTranslation?.nameOriginal?.takeIf { it.isNotBlank() }
-                ?: dto.name?.takeIf { it.isNotBlank() }
-                ?: "Unnamed exercise"
-
-        val resolvedDescription =
-            bestTranslation?.description?.takeIf { it.isNotBlank() }
-                ?: dto.description?.takeIf { it.isNotBlank() }
-                ?: "No instructions available."
 
         return Exercise(
             id = dto.id.toString(),
-            name = resolvedName,
-            instructions = cleanDescription(resolvedDescription),
+            name = cleanText(selectedTranslation.name),
+            instructions = cleanText(selectedTranslation.description),
             muscleGroup = mapMuscleGroup(dto)
         )
+    }
+
+    fun hasCompleteTranslation(
+        dto: WgerExerciseDto,
+        preferredLanguage: ExerciseLanguage
+    ): Boolean {
+        val translation = dto.translations.firstOrNull {
+            it.language == preferredLanguage.wgerLanguageId
+        }
+
+        return !translation?.name.isNullOrBlank() &&
+                !translation?.description.isNullOrBlank()
     }
 
     private fun mapMuscleGroup(dto: WgerExerciseDto): MuscleGroup {
@@ -44,15 +49,14 @@ object WgerMapper {
         }
     }
 
-    private fun cleanDescription(description: String?): String {
-        return description
+    private fun cleanText(text: String?): String {
+        return text
             ?.replace(Regex("<[^>]*>"), " ")
             ?.replace("&nbsp;", " ")
             ?.replace("&amp;", "&")
             ?.replace(Regex("\\s+"), " ")
             ?.trim()
-            ?.takeIf { it.isNotBlank() }
-            ?: "No instructions available."
+            .orEmpty()
     }
 
     private fun String?.containsAny(vararg values: String): Boolean {

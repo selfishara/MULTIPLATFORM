@@ -17,34 +17,58 @@ import com.example.multiplatform.screens.ExercisesScreen
 import com.example.multiplatform.screens.HomeScreen
 import com.example.multiplatform.screens.MyRoutineScreen
 import com.example.multiplatform.screens.WorkoutScreen
+import com.example.multiplatform.state.AppSettingsState
 import com.example.multiplatform.state.RoutineState
+import kotlinx.coroutines.CancellationException
 
 @Composable
 fun NavigationWrapper(
     exerciseRepository: ExerciseRepository
 ) {
     val backStack = rememberNavBackStack(navConfig, Route.Home)
+
     var exercises by remember { mutableStateOf<List<Exercise>>(emptyList()) }
 
-    LaunchedEffect(Unit) {
+    val selectedLanguage = AppSettingsState.exerciseLanguage
+
+    LaunchedEffect(selectedLanguage) {
         runCatching {
-            exerciseRepository.getExercises()
+            exerciseRepository.getExercises(selectedLanguage)
         }.onSuccess { loadedExercises ->
-            exercises = loadedExercises
+            if (loadedExercises.isNotEmpty()) {
+                exercises = loadedExercises
+            }
+
+            println("Loaded exercises: ${loadedExercises.size} - language: $selectedLanguage")
         }.onFailure { error ->
+            if (error is CancellationException) {
+                println("Language reload cancelled: $selectedLanguage")
+                return@onFailure
+            }
+
+            println("WGER ERROR changing language to $selectedLanguage")
             error.printStackTrace()
-            exercises = emptyList()
         }
     }
 
     NavDisplay(
         backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
+        onBack = {
+            backStack.removeLastOrNull()
+        },
         entryProvider = entryProvider {
             entry<Route.Home> {
                 HomeScreen(
-                    onStartClick = { backStack.add(Route.Exercises) },
-                    onNavigateToRoutine = { backStack.add(Route.MyRoutine) }
+                    onStartClick = {
+                        backStack.add(Route.Exercises)
+                    },
+                    onNavigateToRoutine = {
+                        backStack.add(Route.MyRoutine)
+                    },
+                    selectedLanguage = AppSettingsState.exerciseLanguage,
+                    onLanguageChange = { language ->
+                        AppSettingsState.updateExerciseLanguage(language)
+                    }
                 )
             }
 
@@ -53,8 +77,12 @@ fun NavigationWrapper(
                     onCategoryClick = { categoryName ->
                         backStack.add(Route.CategoryExercises(categoryName))
                     },
-                    onBack = { backStack.removeLastOrNull() },
-                    onNavigateToRoutine = { backStack.add(Route.MyRoutine) }
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onNavigateToRoutine = {
+                        backStack.add(Route.MyRoutine)
+                    }
                 )
             }
 
@@ -65,8 +93,12 @@ fun NavigationWrapper(
                     onExerciseClick = { exerciseId ->
                         backStack.add(Route.ExerciseDetail(exerciseId))
                     },
-                    onBack = { backStack.removeLastOrNull() },
-                    onNavigateToRoutine = { backStack.add(Route.MyRoutine) }
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onNavigateToRoutine = {
+                        backStack.add(Route.MyRoutine)
+                    }
                 )
             }
 
@@ -77,21 +109,31 @@ fun NavigationWrapper(
                     onAddToRoutine = { exercise ->
                         RoutineState.addExercise(exercise)
                     },
-                    onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
-                    onBack = { backStack.removeLastOrNull() }
+                    onNavigateToRoutine = {
+                        backStack.add(Route.MyRoutine)
+                    },
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    }
                 )
             }
 
             entry<Route.MyRoutine> {
                 MyRoutineScreen(
-                    onBack = { backStack.removeLastOrNull() },
-                    onStartWorkout = { backStack.add(Route.Workout) }
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    },
+                    onStartWorkout = {
+                        backStack.add(Route.Workout)
+                    }
                 )
             }
 
             entry<Route.Workout> {
                 WorkoutScreen(
-                    onBack = { backStack.removeLastOrNull() }
+                    onBack = {
+                        backStack.removeLastOrNull()
+                    }
                 )
             }
         }

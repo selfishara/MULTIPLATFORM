@@ -5,7 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class WgerResponseDto(
-    val results: List<WgerExerciseDto> = emptyList()
+    val count: Int,
+    val next: String? = null,
+    val previous: String? = null,
+    val results: List<WgerExerciseDto>
 )
 
 @Serializable
@@ -28,6 +31,8 @@ data class WgerTranslationDto(
     val id: Int? = null,
     val name: String? = null,
     val description: String? = null,
+    val language: Int? = null,
+
     @SerialName("name_original")
     val nameOriginal: String? = null
 )
