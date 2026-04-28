@@ -16,5 +16,10 @@ object HttpClientProvider {
                 }
             )
         }
+        install(io.ktor.client.plugins.HttpTimeout) {
+            requestTimeoutMillis = 30000
+            connectTimeoutMillis = 30000
+            socketTimeoutMillis = 30000
+        }
     }
 }

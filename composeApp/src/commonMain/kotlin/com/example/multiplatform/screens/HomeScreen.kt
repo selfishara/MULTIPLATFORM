@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.multiplatform.model.ExerciseLanguage
 import com.example.multiplatform.model.MuscleGroup
 
 /**
@@ -33,7 +34,9 @@ import com.example.multiplatform.model.MuscleGroup
 @Composable
 fun HomeScreen(
     onStartClick: () -> Unit,
-    onNavigateToRoutine: () -> Unit
+    onNavigateToRoutine: () -> Unit,
+    selectedLanguage: ExerciseLanguage,
+    onLanguageChange: (ExerciseLanguage) -> Unit
 ) {
     val totalExercises = 0
     val totalGroups = MuscleGroup.entries.size
@@ -90,6 +93,19 @@ fun HomeScreen(
                         label = "Groups",
                         value = totalGroups.toString()
                     )
+                    Button(
+                        onClick = { onLanguageChange(ExerciseLanguage.ENGLISH) },
+                        enabled = selectedLanguage != ExerciseLanguage.ENGLISH
+                    ) {
+                        Text("English")
+                    }
+
+                    Button(
+                        onClick = { onLanguageChange(ExerciseLanguage.SPANISH) },
+                        enabled = selectedLanguage != ExerciseLanguage.SPANISH
+                    ) {
+                        Text("Español")
+                    }
                 }
 
                 Row(
