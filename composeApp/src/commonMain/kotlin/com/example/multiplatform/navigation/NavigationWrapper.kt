@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.multiplatform.data.PredefinedRoutines
 import com.example.multiplatform.data.routine.RoutineRepository
 import com.example.multiplatform.data.sync.ExerciseSyncService
 import com.example.multiplatform.data.sync.SyncState
@@ -94,8 +95,14 @@ fun NavigationWrapper(
                     onStartClick = { backStack.add(Route.Exercises) },
                     onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
                     selectedLanguage = AppSettingsState.exerciseLanguage,
-                    onLanguageChange = { language ->
-                        AppSettingsState.updateExerciseLanguage(language)
+                    onLanguageChange = { language -> AppSettingsState.updateExerciseLanguage(language) },
+                    exercises = exercises,
+                    onApplyTemplate = { template ->
+                        val resolved = PredefinedRoutines.resolve(template, exercises)
+                        if (resolved.isNotEmpty()) {
+                            RoutineState.applyTemplate(resolved)
+                            backStack.add(Route.MyRoutine)
+                        }
                     },
                     isLoading = isLoading,
                     exerciseCount = exerciseCount,

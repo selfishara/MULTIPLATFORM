@@ -64,6 +64,15 @@ object RoutineState {
         }
     }
 
+    fun applyTemplate(exercises: List<Exercise>) {
+        _routine.clear()
+        _routine.addAll(exercises)
+        sync {
+            repository?.clearExercises(routineId!!)
+            exercises.forEachIndexed { i, ex -> repository?.addExercise(routineId!!, ex, i) }
+        }
+    }
+
     fun renameRoutine(newName: String) {
         name = newName
         sync {

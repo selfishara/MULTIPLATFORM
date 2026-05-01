@@ -117,12 +117,12 @@ fun MyRoutineScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = "Your routine is empty",
+                                text = "No exercises yet",
                                 style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Add exercises from Explore and build your next session.",
+                                text = "Go back home and pick a Quick Start template, or browse categories to build your own.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

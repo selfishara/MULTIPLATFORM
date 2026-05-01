@@ -2,7 +2,9 @@ package com.example.multiplatform.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,11 +30,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.example.multiplatform.data.PredefinedRoutines
+import com.example.multiplatform.model.Exercise
 import com.example.multiplatform.model.ExerciseLanguage
 import com.example.multiplatform.model.MuscleGroup
+import com.example.multiplatform.model.RoutineTemplate
+
+private val cardScrim = Brush.verticalGradient(
+    0f to Color(0x11000000),
+    0.5f to Color(0x77000000),
+    1f to Color(0xEE000000),
+)
 
 @Composable
 fun HomeScreen(
@@ -36,6 +54,8 @@ fun HomeScreen(
     onNavigateToRoutine: () -> Unit,
     selectedLanguage: ExerciseLanguage,
     onLanguageChange: (ExerciseLanguage) -> Unit,
+    exercises: List<Exercise> = emptyList(),
+    onApplyTemplate: (RoutineTemplate) -> Unit = {},
     isLoading: Boolean = false,
     exerciseCount: Int = 0,
     syncError: String? = null
@@ -47,39 +67,44 @@ fun HomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(48.dp))
-
-        // Hero card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        // ─── HERO ────────────────────────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(320.dp)
         ) {
+            AsyncImage(
+                model = MuscleGroup.CHEST.coverUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+            Box(modifier = Modifier.matchParentSize().background(cardScrim))
+
             Column(
-                modifier = Modifier.padding(22.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Surface(
                     shape = RoundedCornerShape(999.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.10f)
+                    color = MaterialTheme.colorScheme.primary.copy(0.18f)
                 ) {
                     Text(
                         text = "GYMSPOT LITE",
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
                     )
                 }
 
                 Text(
-                    text = "Train with\nfocus.",
+                    text = "Train\nHard.",
                     style = MaterialTheme.typography.displayLarge,
                     fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = Color.White
                 )
 
                 Row(
@@ -88,116 +113,142 @@ fun HomeScreen(
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(18.dp),
                             strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.primary
                         )
                     } else {
-                        StatPill(label = "EXERCISES", value = exerciseCount.toString())
+                        StatPill("EXERCISES", exerciseCount.toString())
                     }
-                    StatPill(label = "GROUPS", value = totalGroups.toString())
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    LangButton(
-                        label = "EN",
-                        selected = selectedLanguage == ExerciseLanguage.ENGLISH,
-                        onClick = { onLanguageChange(ExerciseLanguage.ENGLISH) }
-                    )
-                    LangButton(
-                        label = "ES",
-                        selected = selectedLanguage == ExerciseLanguage.SPANISH,
-                        onClick = { onLanguageChange(ExerciseLanguage.SPANISH) }
-                    )
+                    StatPill("GROUPS", totalGroups.toString())
+                    Spacer(Modifier.weight(1f))
+                    LangChip("EN", selectedLanguage == ExerciseLanguage.ENGLISH) { onLanguageChange(ExerciseLanguage.ENGLISH) }
+                    LangChip("ES", selectedLanguage == ExerciseLanguage.SPANISH) { onLanguageChange(ExerciseLanguage.SPANISH) }
                 }
             }
         }
 
-        if (syncError != null) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Text(
-                    text = syncError,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                )
-            }
-        }
-
-        Text(
-            text = "Pick your next move",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        // Explore card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        // ─── ACTIONS ─────────────────────────────────────────────
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Explore exercises",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Jump into muscle groups and find the movements you need.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
                 Button(
                     onClick = onStartClick,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f).height(52.dp),
                     shape = RoundedCornerShape(999.dp)
                 ) {
-                    Text("Browse categories")
+                    Text("Browse")
                 }
-            }
-        }
-
-        // Routine card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "Continue your routine",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = "Review your saved exercises and get ready for the workout.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
                 OutlinedButton(
                     onClick = onNavigateToRoutine,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f).height(52.dp),
                     shape = RoundedCornerShape(999.dp)
                 ) {
-                    Text("My routine")
+                    Text("My Routine")
+                }
+            }
+
+            if (syncError != null) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.errorContainer
+                ) {
+                    Text(
+                        text = syncError,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)
+                    )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // ─── QUICK START ─────────────────────────────────────────
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Quick Start",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                if (exercises.isEmpty() && !isLoading) {
+                    Text(
+                        text = "Load exercises first",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(PredefinedRoutines.all, key = { it.name }) { template ->
+                    TemplateCard(
+                        template = template,
+                        enabled = exercises.isNotEmpty(),
+                        onClick = { onApplyTemplate(template) }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(32.dp))
+    }
+}
+
+// ─── PRIVATE COMPONENTS ──────────────────────────────────────────
+
+@Composable
+private fun TemplateCard(template: RoutineTemplate, enabled: Boolean, onClick: () -> Unit) {
+    Card(
+        onClick = { if (enabled) onClick() },
+        modifier = Modifier.width(170.dp).height(110.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = template.coverUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize()
+            )
+            Box(modifier = Modifier.matchParentSize().background(cardScrim))
+            if (!enabled) {
+                Box(modifier = Modifier.matchParentSize().background(Color(0x88000000)))
+            }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = template.tag,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = template.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
@@ -205,44 +256,33 @@ fun HomeScreen(
 private fun StatPill(label: String, value: String) {
     Surface(
         shape = RoundedCornerShape(999.dp),
-        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f)
+        color = Color.White.copy(alpha = 0.12f)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.80f)
-            )
+            Text(text = value, style = MaterialTheme.typography.titleMedium, color = Color.White)
+            Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.White.copy(0.7f))
         }
     }
 }
 
 @Composable
-private fun LangButton(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun LangChip(label: String, selected: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         enabled = !selected,
         shape = RoundedCornerShape(999.dp),
-        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.18f),
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            disabledContainerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.30f),
-            disabledContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (selected) Color.White.copy(0.25f) else Color.White.copy(0.10f),
+            contentColor = Color.White,
+            disabledContainerColor = Color.White.copy(0.25f),
+            disabledContentColor = Color.White,
         ),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
         modifier = Modifier.height(32.dp)
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall
-        )
+        Text(text = label, style = MaterialTheme.typography.labelSmall)
     }
 }
