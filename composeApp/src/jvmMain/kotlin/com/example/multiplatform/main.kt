@@ -21,7 +21,7 @@ fun main() = application {
         dataSource = SupabaseExerciseDataSource()
     )
 
-    val exerciseRepository = ExerciseSyncService(
+    val syncService = ExerciseSyncService(
         remoteRepository = wgerRepository,
         supabaseRepository = supabaseRepository
     )
@@ -31,7 +31,7 @@ fun main() = application {
         title = "GymSpot Lite"
     ) {
         App(
-            exerciseRepository = exerciseRepository
+            exerciseSyncService = syncService
         )
     }
 }

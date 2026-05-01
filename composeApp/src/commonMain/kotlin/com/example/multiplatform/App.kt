@@ -1,23 +1,14 @@
 package com.example.multiplatform
 
 import androidx.compose.runtime.Composable
-
-import com.example.multiplatform.data.remote.ExerciseRepository
-
+import com.example.multiplatform.data.sync.ExerciseSyncService
 import com.example.multiplatform.navigation.NavigationWrapper
 
 @Composable
-
 fun App(
-
-    exerciseRepository: ExerciseRepository
-
+    exerciseSyncService: ExerciseSyncService
 ) {
-
     NavigationWrapper(
-
-        exerciseRepository = exerciseRepository
-
+        exerciseSyncService = exerciseSyncService
     )
-
 }

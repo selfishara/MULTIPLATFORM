@@ -16,6 +16,20 @@ class SupabaseExerciseDataSource {
             .decodeList<SupabaseExerciseDto>()
     }
 
+    suspend fun existsByLanguage(language: String): Boolean {
+        return try {
+            table
+                .select {
+                    filter { eq("language", language) }
+                    limit(1)
+                }
+                .decodeList<SupabaseExerciseDto>()
+                .isNotEmpty()
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun upsertExercises(exercises: List<SupabaseExerciseDto>) {
         if (exercises.isEmpty()) return
 

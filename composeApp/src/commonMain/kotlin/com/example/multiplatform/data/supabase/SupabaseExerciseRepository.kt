@@ -25,6 +25,10 @@ class SupabaseExerciseRepository(
         return exercises
     }
 
+    suspend fun existsByLanguage(language: ExerciseLanguage): Boolean {
+        return dataSource.existsByLanguage(language.apiCode.lowercase())
+    }
+
     suspend fun cacheExercises(
         exercises: List<Exercise>,
         language: ExerciseLanguage
