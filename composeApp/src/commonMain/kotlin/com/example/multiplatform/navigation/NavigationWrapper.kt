@@ -6,13 +6,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.example.multiplatform.data.routine.RoutineRepository
 import com.example.multiplatform.data.sync.ExerciseSyncService
 import com.example.multiplatform.data.sync.SyncState
 import com.example.multiplatform.model.Exercise
+import com.example.multiplatform.platform.SessionProvider
 import com.example.multiplatform.screens.CategoryExercisesScreen
 import com.example.multiplatform.screens.ExerciseDetailScreen
 import com.example.multiplatform.screens.ExercisesScreen
@@ -25,13 +28,29 @@ import kotlinx.coroutines.CancellationException
 
 @Composable
 fun NavigationWrapper(
-    exerciseSyncService: ExerciseSyncService
+    exerciseSyncService: ExerciseSyncService,
+    routineRepository: RoutineRepository
 ) {
     val backStack = rememberNavBackStack(navConfig, Route.Home)
+    val scope = rememberCoroutineScope()
 
     var exercises by remember { mutableStateOf<List<Exercise>>(emptyList()) }
     val syncState by exerciseSyncService.syncState.collectAsState()
     val selectedLanguage = AppSettingsState.exerciseLanguage
+
+    remember { RoutineState.init(routineRepository, scope) }
+
+    LaunchedEffect(Unit) {
+        RoutineState.markLoading(true)
+        try {
+            val routine = routineRepository.loadOrCreate(SessionProvider.getSessionId())
+            RoutineState.loadFromRemote(routine.id, routine.name, routine.exercises)
+            println("[Routine] Loaded '${routine.name}' with ${routine.exercises.size} exercises")
+        } catch (e: Exception) {
+            RoutineState.markLoading(false)
+            println("[Routine] Failed to load: ${e.message}")
+        }
+    }
 
     val isLoading = syncState is SyncState.Loading
     val exerciseCount = when (val s = syncState) {
