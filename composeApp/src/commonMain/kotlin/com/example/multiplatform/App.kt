@@ -4,14 +4,17 @@ import androidx.compose.runtime.Composable
 import com.example.multiplatform.data.routine.RoutineRepository
 import com.example.multiplatform.data.sync.ExerciseSyncService
 import com.example.multiplatform.navigation.NavigationWrapper
+import com.example.multiplatform.theme.GymSpotTheme
 
 @Composable
 fun App(
     exerciseSyncService: ExerciseSyncService,
     routineRepository: RoutineRepository
 ) {
-    NavigationWrapper(
-        exerciseSyncService = exerciseSyncService,
-        routineRepository = routineRepository
-    )
+    GymSpotTheme {
+        NavigationWrapper(
+            exerciseSyncService = exerciseSyncService,
+            routineRepository = routineRepository
+        )
+    }
 }

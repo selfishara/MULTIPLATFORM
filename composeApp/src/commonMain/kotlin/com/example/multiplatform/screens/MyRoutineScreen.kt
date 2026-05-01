@@ -2,17 +2,22 @@ package com.example.multiplatform.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,25 +41,25 @@ fun MyRoutineScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         TopBar(
             title = "My Routine",
-            subtitle = "Keep your workout ready",
             showBackIcon = true,
             onBackClick = onBack
         )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)
         ) {
+            // Hero card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(18.dp),
+                        modifier = Modifier.padding(22.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         OutlinedTextField(
@@ -63,20 +68,35 @@ fun MyRoutineScreen(
                                 routineName = it
                                 RoutineState.renameRoutine(it)
                             },
-                            label = { Text("Routine name") },
-                            modifier = Modifier.fillMaxWidth()
+                            label = {
+                                Text(
+                                    "Routine name",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                cursorColor = MaterialTheme.colorScheme.primary
+                            )
                         )
 
                         Text(
-                            text = "${routine.size} exercises saved",
+                            text = "${routine.size} exercise${if (routine.size != 1) "s" else ""} saved",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.80f)
                         )
 
                         Button(
                             onClick = onStartWorkout,
                             enabled = routine.isNotEmpty(),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(999.dp)
                         ) {
                             Text("Start workout")
                         }
@@ -88,9 +108,9 @@ fun MyRoutineScreen(
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(20.dp),
@@ -102,7 +122,7 @@ fun MyRoutineScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Add a few exercises from Explore and build your next session.",
+                                text = "Add exercises from Explore and build your next session.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -121,16 +141,16 @@ fun MyRoutineScreen(
                 items(routine, key = { it.id }) { exercise ->
                     ExerciseItem(
                         exercise = exercise,
-                        onRemove = {
-                            RoutineState.removeExercise(exercise)
-                        }
+                        onRemove = { RoutineState.removeExercise(exercise) }
                     )
                 }
 
                 item {
+                    Spacer(modifier = Modifier.height(4.dp))
                     OutlinedButton(
                         onClick = { RoutineState.clearRoutine() },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(999.dp)
                     ) {
                         Text("Clear routine")
                     }

@@ -1,33 +1,27 @@
 package com.example.multiplatform.model
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.DirectionsRun
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.EmojiPeople
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
-/**
- * Represents the muscle groups/categories available in the app.
- * Each exercise belongs to one of these categories.
- * Each category has an associated icon for visual identification.
- */
 enum class MuscleGroup(
     val displayName: String,
     val icon: ImageVector
 ) {
-    CHEST("Chest", Icons.Filled.FitnessCenter),
-    LEGS("Legs", Icons.Filled.DirectionsRun),
-    BACK("Back", Icons.Filled.FavoriteBorder),
-    SHOULDERS("Shoulders", Icons.Filled.EmojiPeople),
-    CORE("Core", Icons.Filled.AutoAwesome),
-    ARMS("Arms", Icons.Filled.Favorite);
+    CHEST("Chest", Icons.Filled.Favorite),
+    LEGS("Legs", Icons.Filled.Add),
+    BACK("Back", Icons.Filled.Star),
+    SHOULDERS("Shoulders", Icons.Filled.Search),
+    CORE("Core", Icons.Filled.Done),
+    ARMS("Arms", Icons.Filled.FavoriteBorder);
 
     companion object {
-        fun fromString(value: String): MuscleGroup {
-            return entries.find { it.displayName == value } ?: CHEST
-        }
+        fun fromString(value: String): MuscleGroup =
+            entries.find { it.displayName == value } ?: CHEST
     }
 }

@@ -65,7 +65,8 @@ fun CategoryExercisesScreen(
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(32.dp),
-                        strokeWidth = 3.dp
+                        strokeWidth = 3.dp,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             } else {
@@ -77,9 +78,11 @@ fun CategoryExercisesScreen(
                 ) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
                         Column(
                             modifier = Modifier.padding(20.dp),
