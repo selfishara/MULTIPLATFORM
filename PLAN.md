@@ -86,15 +86,15 @@ GymSpot Lite has graduated from a simple practice app to a **MVP+ with productio
 
 ---
 
-### Phase 7 — Workout Logic Expansion ⏳ FUTURE
+### Phase 7 — Workout Logic Expansion ✅ COMPLETED
 
 **Goal:** Make `WorkoutScreen` a real workout execution experience.
 
-- [ ] Sets/reps/duration tracking per exercise
-- [ ] Workout session state (`WorkoutSessionState` or ViewModel)
-- [ ] Progress bar and exercise counter
-- [ ] Rest timer
-- [ ] Completion summary screen
+- [x] Sets/reps/duration tracking per exercise (3 sets × 10 reps, configurable via constants)
+- [x] `WorkoutSessionState` singleton — currentIndex, setsCompleted, totalSetsCompleted, totalSeconds, restSecondsLeft
+- [x] Progress bar and exercise counter (X / N display)
+- [x] Rest timer — 60s countdown with skip option, driven by `LaunchedEffect` tick
+- [x] Completion summary screen — inline in WorkoutScreen: time elapsed, exercises, sets done
 
 ---
 
