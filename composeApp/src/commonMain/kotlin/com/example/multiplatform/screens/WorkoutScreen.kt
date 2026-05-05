@@ -163,7 +163,7 @@ private fun ActiveWorkout() {
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    for (i in 0 until WorkoutSessionState.TARGET_SETS) {
+                    for (i in 0 until WorkoutSessionState.targetSets) {
                         Box(
                             modifier = Modifier
                                 .size(12.dp)
@@ -175,14 +175,14 @@ private fun ActiveWorkout() {
                         )
                     }
                     Text(
-                        text = "$setsCompleted / ${WorkoutSessionState.TARGET_SETS}",
+                        text = "$setsCompleted / ${WorkoutSessionState.targetSets}",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 Text(
-                    text = "${WorkoutSessionState.TARGET_REPS} REPS",
+                    text = "${WorkoutSessionState.targetReps} REPS",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -254,7 +254,7 @@ private fun ActiveWorkout() {
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                     shape = RoundedCornerShape(999.dp)
                 ) {
-                    Text("Done  ·  ${WorkoutSessionState.TARGET_REPS} reps")
+                    Text("Done  ·  ${WorkoutSessionState.targetReps} reps")
                 }
             }
         }

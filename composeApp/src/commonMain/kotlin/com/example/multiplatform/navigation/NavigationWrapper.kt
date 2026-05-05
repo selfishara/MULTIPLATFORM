@@ -31,12 +31,15 @@ import com.example.multiplatform.screens.HistoryScreen
 import com.example.multiplatform.screens.HomeScreen
 import com.example.multiplatform.screens.LoginScreen
 import com.example.multiplatform.screens.MyRoutineScreen
+import com.example.multiplatform.screens.ProfileScreen
+import com.example.multiplatform.screens.SettingsScreen
 import com.example.multiplatform.screens.WorkoutScreen
 import com.example.multiplatform.state.AppSettingsState
 import com.example.multiplatform.state.AuthState
 import com.example.multiplatform.state.FavoritesState
 import com.example.multiplatform.state.RoutineState
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationWrapper(
@@ -76,7 +79,16 @@ private fun MainContent(
     val syncState by exerciseSyncService.syncState.collectAsState()
     val selectedLanguage = AppSettingsState.exerciseLanguage
 
-    // Load routine + favorites whenever a user logs in
+    val logoutAndGoToLogin: () -> Unit = {
+        scope.launch {
+            AuthState.logout()
+            RoutineState.reset()
+            FavoritesState.reset()
+            backStack.removeAll { true }
+            backStack.add(Route.Login)
+        }
+    }
+
     LaunchedEffect(AuthState.currentUserId) {
         val userId = AuthState.currentUserId ?: return@LaunchedEffect
         RoutineState.markLoading(true)
@@ -146,15 +158,8 @@ private fun MainContent(
                     onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
                     onNavigateToFavorites = { backStack.add(Route.Favorites) },
                     onNavigateToHistory = { backStack.add(Route.History) },
-                    onLogout = {
-                        scope.launch {
-                            AuthState.logout()
-                            RoutineState.reset()
-                            FavoritesState.reset()
-                            backStack.removeAll { true }
-                            backStack.add(Route.Login)
-                        }
-                    },
+                    onNavigateToProfile = { backStack.add(Route.Profile) },
+                    onNavigateToSettings = { backStack.add(Route.Settings) },
                     selectedLanguage = AppSettingsState.exerciseLanguage,
                     onLanguageChange = { language -> AppSettingsState.updateExerciseLanguage(language) },
                     exercises = exercises,
@@ -224,6 +229,17 @@ private fun MainContent(
 
             entry<Route.History> {
                 HistoryScreen(onBack = { backStack.removeLastOrNull() })
+            }
+
+            entry<Route.Profile> {
+                ProfileScreen(
+                    onBack = { backStack.removeLastOrNull() },
+                    onLogout = logoutAndGoToLogin
+                )
+            }
+
+            entry<Route.Settings> {
+                SettingsScreen(onBack = { backStack.removeLastOrNull() })
             }
         }
     )

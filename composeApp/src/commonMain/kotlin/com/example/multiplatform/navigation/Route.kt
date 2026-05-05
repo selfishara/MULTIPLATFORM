@@ -42,4 +42,10 @@ sealed class Route : NavKey {
 
     @Serializable
     data object History : Route()
+
+    @Serializable
+    data object Profile : Route()
+
+    @Serializable
+    data object Settings : Route()
 }

@@ -8,12 +8,15 @@ import com.example.multiplatform.model.Exercise
 
 object WorkoutSessionState {
 
-    const val TARGET_SETS = 3
-    const val TARGET_REPS = 10
-    const val REST_SECONDS = 60
-
     private val _exercises = mutableStateListOf<Exercise>()
     val exercises: List<Exercise> get() = _exercises
+
+    var targetSets by mutableStateOf(3)
+        private set
+    var targetReps by mutableStateOf(10)
+        private set
+    var restSeconds by mutableStateOf(60)
+        private set
 
     var currentIndex by mutableStateOf(0)
         private set
@@ -30,12 +33,15 @@ object WorkoutSessionState {
 
     val currentExercise get() = _exercises.getOrNull(currentIndex)
     val isResting get() = restSecondsLeft >= 0
-    val allSetsForCurrentDone get() = setsCompleted >= TARGET_SETS
+    val allSetsForCurrentDone get() = setsCompleted >= targetSets
     val progress get() = if (_exercises.isEmpty()) 0f else (currentIndex + 1f) / _exercises.size
 
     fun start(routine: List<Exercise>) {
         _exercises.clear()
         _exercises.addAll(routine)
+        targetSets = AppSettingsState.targetSets
+        targetReps = AppSettingsState.targetReps
+        restSeconds = AppSettingsState.restSeconds
         currentIndex = 0
         setsCompleted = 0
         totalSetsCompleted = 0
@@ -57,8 +63,8 @@ object WorkoutSessionState {
         if (isResting || allSetsForCurrentDone) return
         setsCompleted++
         totalSetsCompleted++
-        if (setsCompleted < TARGET_SETS) {
-            restSecondsLeft = REST_SECONDS
+        if (setsCompleted < targetSets) {
+            restSecondsLeft = restSeconds
         }
     }
 

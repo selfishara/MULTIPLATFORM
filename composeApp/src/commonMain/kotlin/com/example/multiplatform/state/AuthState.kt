@@ -12,6 +12,8 @@ object AuthState {
 
     var currentUserId: String? by mutableStateOf(null)
         private set
+    var currentEmail: String? by mutableStateOf(null)
+        private set
     var isChecking by mutableStateOf(true)
         private set
 
@@ -19,14 +21,16 @@ object AuthState {
 
     suspend fun init() {
         isChecking = true
-        currentUserId = try {
+        try {
             val auth = SupabaseClientProvider.client.auth
-            // Allow the Auth plugin's session-loading coroutine to run first
             delay(150)
-            auth.currentUserOrNull()?.id
+            val user = auth.currentUserOrNull()
+            currentUserId = user?.id
+            currentEmail = user?.email
         } catch (e: Exception) {
             println("[Auth] Session restore failed: ${e.message}")
-            null
+            currentUserId = null
+            currentEmail = null
         }
         isChecking = false
     }
@@ -36,7 +40,9 @@ object AuthState {
             this.email = email
             this.password = password
         }
-        currentUserId = SupabaseClientProvider.client.auth.currentUserOrNull()?.id
+        val user = SupabaseClientProvider.client.auth.currentUserOrNull()
+        currentUserId = user?.id
+        currentEmail = user?.email
     }
 
     suspend fun signUp(email: String, password: String) {
@@ -44,11 +50,14 @@ object AuthState {
             this.email = email
             this.password = password
         }
-        currentUserId = SupabaseClientProvider.client.auth.currentUserOrNull()?.id
+        val user = SupabaseClientProvider.client.auth.currentUserOrNull()
+        currentUserId = user?.id
+        currentEmail = user?.email
     }
 
     suspend fun logout() {
         SupabaseClientProvider.client.auth.signOut()
         currentUserId = null
+        currentEmail = null
     }
 }

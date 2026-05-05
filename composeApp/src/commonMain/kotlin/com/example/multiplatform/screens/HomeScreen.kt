@@ -21,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +54,8 @@ fun HomeScreen(
     onNavigateToRoutine: () -> Unit,
     onNavigateToFavorites: () -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
-    onLogout: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     selectedLanguage: ExerciseLanguage,
     onLanguageChange: (ExerciseLanguage) -> Unit,
     exercises: List<Exercise> = emptyList(),
@@ -175,6 +175,25 @@ fun HomeScreen(
                     Text("History")
                 }
             }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedButton(
+                    onClick = onNavigateToProfile,
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(999.dp)
+                ) {
+                    Text("Profile")
+                }
+                OutlinedButton(
+                    onClick = onNavigateToSettings,
+                    modifier = Modifier.weight(1f).height(48.dp),
+                    shape = RoundedCornerShape(999.dp)
+                ) {
+                    Text("Settings")
+                }
+            }
 
             if (syncError != null) {
                 Surface(
@@ -228,19 +247,6 @@ fun HomeScreen(
         }
 
         Spacer(Modifier.height(32.dp))
-
-        TextButton(
-            onClick = onLogout,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = "Sign out",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
     }
 }
 
