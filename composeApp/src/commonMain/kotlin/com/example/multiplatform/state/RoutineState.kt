@@ -1,46 +1,100 @@
 package com.example.multiplatform.state
 
-/**
- * Simple state management for the user's workout routine (MVP - temporary solution).
- *
- * Manages a mutable list of exercises that the user has added to their routine,
- * as well as the routine's name. Provides methods to add, remove, and clear exercises,
- * and rename the routine. Prevents duplicate exercises from being added.
- *
- * Note: This is a temporary implementation for MVP. Will be replaced with ViewModel-based
- * state management in future versions.
- */
-import com.example.multiplatform.model.Exercise
-
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.multiplatform.data.routine.RoutineRepository
+import com.example.multiplatform.model.Exercise
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 object RoutineState {
 
     private val _routine = mutableStateListOf<Exercise>()
     var name by mutableStateOf("My Routine")
         private set
+    var isLoading by mutableStateOf(false)
+        private set
 
-    val routine: List<Exercise>
-        get() = _routine
+    val routine: List<Exercise> get() = _routine
+
+    private var routineId: String? = null
+    private var repository: RoutineRepository? = null
+    private var scope: CoroutineScope? = null
+
+    fun init(repo: RoutineRepository, coroutineScope: CoroutineScope) {
+        repository = repo
+        scope = coroutineScope
+    }
+
+    fun loadFromRemote(id: String, routineName: String, exercises: List<Exercise>) {
+        routineId = id
+        name = routineName
+        _routine.clear()
+        _routine.addAll(exercises)
+        isLoading = false
+    }
+
+    fun markLoading(loading: Boolean) {
+        isLoading = loading
+    }
 
     fun addExercise(exercise: Exercise) {
         if (_routine.none { it.id == exercise.id }) {
+            val position = _routine.size
             _routine.add(exercise)
+            sync {
+                repository?.addExercise(routineId!!, exercise, position)
+            }
         }
     }
 
     fun removeExercise(exercise: Exercise) {
         _routine.removeAll { it.id == exercise.id }
+        sync {
+            repository?.removeExercise(routineId!!, exercise.id)
+        }
     }
 
     fun clearRoutine() {
         _routine.clear()
+        sync {
+            repository?.clearExercises(routineId!!)
+        }
+    }
+
+    fun applyTemplate(exercises: List<Exercise>) {
+        _routine.clear()
+        _routine.addAll(exercises)
+        sync {
+            repository?.clearExercises(routineId!!)
+            exercises.forEachIndexed { i, ex -> repository?.addExercise(routineId!!, ex, i) }
+        }
     }
 
     fun renameRoutine(newName: String) {
         name = newName
+        sync {
+            repository?.rename(routineId!!, newName)
+        }
+    }
+
+    fun reset() {
+        _routine.clear()
+        routineId = null
+        name = "My Routine"
+        isLoading = false
+    }
+
+    private fun sync(block: suspend () -> Unit) {
+        val id = routineId ?: return
+        scope?.launch {
+            try {
+                block()
+            } catch (e: Exception) {
+                println("[Routine] Sync error for routine $id: ${e.message}")
+            }
+        }
     }
 }

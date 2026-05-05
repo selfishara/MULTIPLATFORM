@@ -33,4 +33,19 @@ sealed class Route : NavKey {
 
     @Serializable
     data object EditRoutine : Route()
+
+    @Serializable
+    data object Login : Route()
+
+    @Serializable
+    data object Favorites : Route()
+
+    @Serializable
+    data object History : Route()
+
+    @Serializable
+    data object Profile : Route()
+
+    @Serializable
+    data object Settings : Route()
 }
