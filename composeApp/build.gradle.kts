@@ -70,8 +70,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.postgrest)
-            implementation("io.github.jan-tennert.supabase:postgrest-kt:2.5.1")
-            implementation("io.github.jan-tennert.supabase:supabase-kt:2.5.1")
+            implementation(libs.supabase.auth)
         }
 
         commonTest.dependencies {

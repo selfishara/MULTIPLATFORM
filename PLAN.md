@@ -63,28 +63,26 @@ GymSpot Lite has graduated from a simple practice app to a **MVP+ with productio
 
 ---
 
-### Phase 5 — Routine Persistence 🔄 NEXT PRIORITY
+### Phase 5 — Routine Persistence ✅ COMPLETED
 
 **Goal:** Save user routines to Supabase so they survive app restarts.
 
-- [ ] Supabase `routines` and `routine_exercises` tables
-- [ ] `RoutineRepository` with cloud CRUD
-- [ ] Replace in-memory `RoutineState` with persistent state (or bridge pattern)
-- [ ] Favorites / saved exercises system
-- [ ] Exercise history stub
-
-**Prerequisite:** Phase 6 (auth) needed for per-user routines. Can ship as shared anonymous routine first.
+- [x] Supabase `routines` and `routine_exercises` tables
+- [x] `RoutineRepository` with cloud CRUD
+- [x] Replace in-memory `RoutineState` with persistent state (sync on every mutation)
+- [x] Favorites / saved exercises system (`FavoriteDataSource`, `FavoritesState`, `FavoritesScreen`)
+- [x] Exercise history stub (`HistoryScreen` placeholder)
 
 ---
 
-### Phase 6 — Authentication Layer ⏳ FUTURE
+### Phase 6 — Authentication Layer ✅ COMPLETED
 
 **Goal:** Add Supabase Auth so each user has their own cloud data.
 
-- [ ] Supabase Auth: email/password login and register
-- [ ] Session management in `commonMain`
-- [ ] Protected user data (routines, history) per account
-- [ ] Sync exercises and routines tied to authenticated user
+- [x] Supabase Auth: email/password login and register (`AuthState`, `LoginScreen`)
+- [x] Session management in `commonMain` (`PersistentSessionManager`, `AuthTokenStore` expect/actual)
+- [x] Protected user data (routines, favorites) per account — tied to `userId`
+- [x] Logout flow: clears local state (`RoutineState.reset`, `FavoritesState.reset`), navigates to Login
 
 ---
 

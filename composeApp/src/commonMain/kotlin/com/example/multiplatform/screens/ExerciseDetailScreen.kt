@@ -16,6 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -34,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.multiplatform.model.Exercise
+import com.example.multiplatform.state.FavoritesState
 import com.example.multiplatform.state.RoutineState
 
 @Composable
@@ -45,7 +49,9 @@ fun ExerciseDetailScreen(
     onBack: () -> Unit
 ) {
     val exercise = exercises.find { it.id == exerciseId }
+        ?: FavoritesState.favorites.find { it.id == exerciseId }
     val isInRoutine = RoutineState.routine.any { it.id == exerciseId }
+    val isFavorite = FavoritesState.isFavorite(exerciseId)
 
     if (exercise == null) {
         LaunchedEffect(Unit) { onBack() }
@@ -90,11 +96,11 @@ fun ExerciseDetailScreen(
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = onNavigateToRoutine) {
+                    IconButton(onClick = { exercise?.let { FavoritesState.toggle(it) } }) {
                         Icon(
-                            Icons.Default.FavoriteBorder,
-                            contentDescription = "Routine",
-                            tint = Color.White
+                            if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                            tint = if (isFavorite) Color(0xFFE53935) else Color.White
                         )
                     }
                 }
@@ -168,7 +174,7 @@ fun ExerciseDetailScreen(
                 shape = RoundedCornerShape(999.dp)
             ) {
                 Icon(
-                    imageVector = if (isInRoutine) Icons.Default.FavoriteBorder else Icons.Default.FavoriteBorder,
+                    imageVector = if (isInRoutine) Icons.Default.Check else Icons.Default.Add,
                     contentDescription = null,
                     modifier = Modifier.size(18.dp)
                 )

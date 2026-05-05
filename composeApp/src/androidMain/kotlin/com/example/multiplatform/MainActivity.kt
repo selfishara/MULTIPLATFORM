@@ -10,6 +10,7 @@ import com.example.multiplatform.data.supabase.SupabaseExerciseRepository
 import com.example.multiplatform.data.supabase.SupabaseRoutineDataSource
 import com.example.multiplatform.data.supabase.SupabaseRoutineRepository
 import com.example.multiplatform.data.sync.ExerciseSyncService
+import com.example.multiplatform.platform.AuthTokenStore
 import com.example.multiplatform.platform.SessionProvider
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         SessionProvider.initialize(this)
+        AuthTokenStore.initialize(this)
 
         syncService = ExerciseSyncService(
             remoteRepository = NoOpExerciseRepository(),

@@ -80,6 +80,13 @@ object RoutineState {
         }
     }
 
+    fun reset() {
+        _routine.clear()
+        routineId = null
+        name = "My Routine"
+        isLoading = false
+    }
+
     private fun sync(block: suspend () -> Unit) {
         val id = routineId ?: return
         scope?.launch {

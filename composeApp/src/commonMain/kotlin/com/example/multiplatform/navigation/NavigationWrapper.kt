@@ -18,17 +18,23 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.multiplatform.data.PredefinedRoutines
 import com.example.multiplatform.data.routine.RoutineRepository
+import com.example.multiplatform.data.supabase.FavoriteDataSource
 import com.example.multiplatform.data.sync.ExerciseSyncService
 import com.example.multiplatform.data.sync.SyncState
 import com.example.multiplatform.model.Exercise
-import com.example.multiplatform.platform.SessionProvider
+import com.example.multiplatform.model.MuscleGroup
 import com.example.multiplatform.screens.CategoryExercisesScreen
 import com.example.multiplatform.screens.ExerciseDetailScreen
 import com.example.multiplatform.screens.ExercisesScreen
+import com.example.multiplatform.screens.FavoritesScreen
+import com.example.multiplatform.screens.HistoryScreen
 import com.example.multiplatform.screens.HomeScreen
+import com.example.multiplatform.screens.LoginScreen
 import com.example.multiplatform.screens.MyRoutineScreen
 import com.example.multiplatform.screens.WorkoutScreen
 import com.example.multiplatform.state.AppSettingsState
+import com.example.multiplatform.state.AuthState
+import com.example.multiplatform.state.FavoritesState
 import com.example.multiplatform.state.RoutineState
 import kotlinx.coroutines.CancellationException
 
@@ -37,24 +43,66 @@ fun NavigationWrapper(
     exerciseSyncService: ExerciseSyncService,
     routineRepository: RoutineRepository
 ) {
-    val backStack = rememberNavBackStack(navConfig, Route.Home)
+    LaunchedEffect(Unit) {
+        AuthState.init()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        if (!AuthState.isChecking) {
+            MainContent(exerciseSyncService, routineRepository)
+        }
+    }
+}
+
+@Composable
+private fun MainContent(
+    exerciseSyncService: ExerciseSyncService,
+    routineRepository: RoutineRepository
+) {
     val scope = rememberCoroutineScope()
+    val favoriteDataSource = remember { FavoriteDataSource() }
+
+    remember { RoutineState.init(routineRepository, scope) }
+    remember { FavoritesState.init(favoriteDataSource, scope) }
+
+    val initialRoute: Route = if (AuthState.isLoggedIn) Route.Home else Route.Login
+    val backStack = rememberNavBackStack(navConfig, initialRoute)
 
     var exercises by remember { mutableStateOf<List<Exercise>>(emptyList()) }
     val syncState by exerciseSyncService.syncState.collectAsState()
     val selectedLanguage = AppSettingsState.exerciseLanguage
 
-    remember { RoutineState.init(routineRepository, scope) }
-
-    LaunchedEffect(Unit) {
+    // Load routine + favorites whenever a user logs in
+    LaunchedEffect(AuthState.currentUserId) {
+        val userId = AuthState.currentUserId ?: return@LaunchedEffect
         RoutineState.markLoading(true)
         try {
-            val routine = routineRepository.loadOrCreate(SessionProvider.getSessionId())
+            val routine = routineRepository.loadOrCreate(userId)
             RoutineState.loadFromRemote(routine.id, routine.name, routine.exercises)
             println("[Routine] Loaded '${routine.name}' with ${routine.exercises.size} exercises")
         } catch (e: Exception) {
             RoutineState.markLoading(false)
             println("[Routine] Failed to load: ${e.message}")
+        }
+        FavoritesState.markLoading(true)
+        try {
+            val favs = favoriteDataSource.getFavoritesByUser(userId)
+            FavoritesState.loadFromRemote(favs.map { fav ->
+                Exercise(
+                    id = fav.exercise_id,
+                    name = fav.exercise_name,
+                    muscleGroup = MuscleGroup.fromString(fav.muscle_group),
+                    instructions = fav.instructions
+                )
+            })
+            println("[Favorites] Loaded ${favs.size} favorites")
+        } catch (e: Exception) {
+            FavoritesState.markLoading(false)
+            println("[Favorites] Failed to load: ${e.message}")
         }
     }
 
@@ -72,28 +120,41 @@ fun NavigationWrapper(
         runCatching {
             exerciseSyncService.getExercises(selectedLanguage)
         }.onSuccess { loadedExercises ->
-            if (loadedExercises.isNotEmpty()) {
-                exercises = loadedExercises
-            }
+            if (loadedExercises.isNotEmpty()) exercises = loadedExercises
         }.onFailure { error ->
             if (error is CancellationException) return@onFailure
             error.printStackTrace()
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
     NavDisplay(
         backStack = backStack,
         onBack = { backStack.removeLastOrNull() },
         entryProvider = entryProvider {
+            entry<Route.Login> {
+                LoginScreen(
+                    onLoginSuccess = {
+                        backStack.add(Route.Home)
+                        backStack.removeAll { it is Route.Login }
+                    }
+                )
+            }
+
             entry<Route.Home> {
                 HomeScreen(
                     onStartClick = { backStack.add(Route.Exercises) },
                     onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
+                    onNavigateToFavorites = { backStack.add(Route.Favorites) },
+                    onNavigateToHistory = { backStack.add(Route.History) },
+                    onLogout = {
+                        scope.launch {
+                            AuthState.logout()
+                            RoutineState.reset()
+                            FavoritesState.reset()
+                            backStack.removeAll { true }
+                            backStack.add(Route.Login)
+                        }
+                    },
                     selectedLanguage = AppSettingsState.exerciseLanguage,
                     onLanguageChange = { language -> AppSettingsState.updateExerciseLanguage(language) },
                     exercises = exercises,
@@ -137,9 +198,7 @@ fun NavigationWrapper(
                 ExerciseDetailScreen(
                     exerciseId = key.exerciseId,
                     exercises = exercises,
-                    onAddToRoutine = { exercise ->
-                        RoutineState.addExercise(exercise)
-                    },
+                    onAddToRoutine = { exercise -> RoutineState.addExercise(exercise) },
                     onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
                     onBack = { backStack.removeLastOrNull() }
                 )
@@ -153,11 +212,19 @@ fun NavigationWrapper(
             }
 
             entry<Route.Workout> {
-                WorkoutScreen(
+                WorkoutScreen(onBack = { backStack.removeLastOrNull() })
+            }
+
+            entry<Route.Favorites> {
+                FavoritesScreen(
+                    onExerciseClick = { id -> backStack.add(Route.ExerciseDetail(id)) },
                     onBack = { backStack.removeLastOrNull() }
                 )
             }
+
+            entry<Route.History> {
+                HistoryScreen(onBack = { backStack.removeLastOrNull() })
+            }
         }
     )
-    }
 }

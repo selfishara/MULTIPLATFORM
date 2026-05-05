@@ -1,5 +1,6 @@
 package com.example.multiplatform.data.supabase
 
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 
@@ -13,5 +14,8 @@ object SupabaseClientProvider {
         supabaseKey = SUPABASE_ANON_KEY
     ) {
         install(Postgrest)
+        install(Auth) {
+            sessionManager = PersistentSessionManager()
+        }
     }
 }
