@@ -19,6 +19,7 @@ val navConfig = SavedStateConfiguration {
             subclass(Route.Exercises::class, Route.Exercises.serializer())
             subclass(Route.CategoryExercises::class, Route.CategoryExercises.serializer())
             subclass(Route.ExerciseDetail::class, Route.ExerciseDetail.serializer())
+            subclass(Route.Routines::class, Route.Routines.serializer())
             subclass(Route.MyRoutine::class, Route.MyRoutine.serializer())
             subclass(Route.Workout::class, Route.Workout.serializer())
             subclass(Route.EditRoutine::class, Route.EditRoutine.serializer())

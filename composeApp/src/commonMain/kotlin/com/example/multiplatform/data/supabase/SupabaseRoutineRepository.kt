@@ -9,20 +9,28 @@ class SupabaseRoutineRepository(
     private val dataSource: SupabaseRoutineDataSource
 ) : RoutineRepository {
 
-    override suspend fun loadOrCreate(sessionId: String): Routine {
-        val dto = dataSource.getRoutineBySession(sessionId)
-            ?: dataSource.createRoutine(sessionId, "My Routine")
-
-        val exercises = dataSource.getExercises(dto.id).map { ex ->
-            Exercise(
-                id = ex.exercise_id,
-                name = ex.exercise_name,
-                muscleGroup = MuscleGroup.fromString(ex.muscle_group),
-                instructions = ex.instructions
-            )
+    override suspend fun loadAll(userId: String): List<Routine> {
+        val dtos = dataSource.getRoutinesByUser(userId)
+        return dtos.map { dto ->
+            val exercises = dataSource.getExercises(dto.id).map { ex ->
+                Exercise(
+                    id = ex.exercise_id,
+                    name = ex.exercise_name,
+                    muscleGroup = MuscleGroup.fromString(ex.muscle_group),
+                    instructions = ex.instructions
+                )
+            }
+            Routine(id = dto.id, name = dto.name, exercises = exercises)
         }
+    }
 
-        return Routine(id = dto.id, name = dto.name, exercises = exercises)
+    override suspend fun createNew(userId: String, name: String): Routine {
+        val dto = dataSource.createRoutine(userId, name)
+        return Routine(id = dto.id, name = dto.name, exercises = emptyList())
+    }
+
+    override suspend fun delete(routineId: String) {
+        dataSource.deleteRoutine(routineId)
     }
 
     override suspend fun addExercise(routineId: String, exercise: Exercise, position: Int) {

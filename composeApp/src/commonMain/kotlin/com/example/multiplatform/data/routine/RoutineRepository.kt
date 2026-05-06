@@ -4,7 +4,9 @@ import com.example.multiplatform.model.Exercise
 import com.example.multiplatform.model.Routine
 
 interface RoutineRepository {
-    suspend fun loadOrCreate(sessionId: String): Routine
+    suspend fun loadAll(userId: String): List<Routine>
+    suspend fun createNew(userId: String, name: String): Routine
+    suspend fun delete(routineId: String)
     suspend fun addExercise(routineId: String, exercise: Exercise, position: Int)
     suspend fun removeExercise(routineId: String, exerciseId: String)
     suspend fun clearExercises(routineId: String)

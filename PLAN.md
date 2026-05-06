@@ -1,23 +1,18 @@
 # GymSpot Lite — Project Plan
 
-## Current Assessment (April 2026)
+## Current Assessment (May 2026)
 
-GymSpot Lite has graduated from a simple practice app to a **MVP+ with production-style architecture**. The core data stack is solid: real API integration, cloud caching with Supabase, multilingual support, and a clean repository/sync pattern. The project is educational in origin but portfolio-grade in structure.
+GymSpot Lite is a **portfolio-grade KMP fitness app** with production-style architecture. Real API integration, cloud persistence, user authentication, multi-routine management, and a full workout execution flow — all built with shared Kotlin code targeting Android, Desktop, Web, and iOS.
 
-**What works well:**
-- Clean separation of layers (remote → sync → supabase → domain → UI)
-- KMP-first design: shared logic in `commonMain`, platform specifics isolated
-- Functional exercise browsing with language switching (EN/ES)
-- Routine creation, editing, and workout execution flow
-- CI pipeline running on GitHub Actions
-
-**Current gaps:**
-- `WgerDataSource` is JVM-only — Android and other targets depend on shared stub/abstraction
-- No `existsByLanguage()` guard on sync — every app launch can trigger a full re-fetch
-- Routine state is in-memory only (lost on restart)
-- No user authentication — all users share the same Supabase cache
-- No automated tests beyond infrastructure setup
-- Workout screen is functional but lacks sets/reps/timer logic
+**What's working:**
+- Clean layer separation: remote API → sync → Supabase → domain → UI
+- KMP-first: all business logic in `commonMain`, platform specifics isolated
+- Exercise browsing with real Wger API data, language switching (EN/ES)
+- Multiple routines per user — create, name, manage, delete; all persisted in Supabase
+- Favorites saved per user account
+- Full workout execution: sets/reps tracking, rest timer, completion summary
+- Supabase Auth: email/password, session persistence, per-user data isolation
+- CI pipeline on GitHub Actions
 
 ---
 
@@ -44,72 +39,57 @@ GymSpot Lite has graduated from a simple practice app to a **MVP+ with productio
 - `SupabaseClientProvider`, DTO, mapper, repository
 - `ExerciseSyncService`: Supabase → Wger → Supabase fallback pattern
 - 192 exercises cached, faster subsequent loads
-- Reduced dependency on external Wger API
-
----
 
 ### Phase 4 — Sync Optimization ✅ COMPLETED
 
-**Branch:** `feature/sync-optimization`
-
-- [x] `existsByLanguage(language)` — Supabase `select limit 1` guards against redundant Wger fetches
-- [x] Selective/partial sync per language — each language is checked and fetched independently
-- [x] Non-blocking loading — `SyncState.Loading` exposed via `StateFlow`; UI shows spinner while sync runs
-- [x] Better error handling — Supabase write failures are isolated; API failure falls back to stale cache (`CACHE_FALLBACK`)
-- [x] Source differentiation — `SyncSource` enum (`CACHE` / `API` / `CACHE_FALLBACK`) carried in `SyncState.Success`
-
-**New files:** `data/sync/SyncState.kt`
-**Key changes:** `ExerciseSyncService`, `SupabaseDataSource`, `SupabaseExerciseRepository`, `NavigationWrapper`, `HomeScreen`, `CategoryExercisesScreen`
-
----
+- `existsByLanguage(language)` — prevents redundant Wger fetches
+- Selective/partial sync per language
+- Non-blocking loading via `SyncState` StateFlow
+- Better error handling: Supabase write failures isolated, API failure falls back to stale cache
 
 ### Phase 5 — Routine Persistence ✅ COMPLETED
 
-**Goal:** Save user routines to Supabase so they survive app restarts.
-
-- [x] Supabase `routines` and `routine_exercises` tables
-- [x] `RoutineRepository` with cloud CRUD
-- [x] Replace in-memory `RoutineState` with persistent state (sync on every mutation)
-- [x] Favorites / saved exercises system (`FavoriteDataSource`, `FavoritesState`, `FavoritesScreen`)
-- [x] Exercise history stub (`HistoryScreen` placeholder)
-
----
+- Supabase `routines` and `routine_exercises` tables
+- `RoutineRepository` with cloud CRUD
+- `RoutineState` syncs every mutation to Supabase in real time
+- Favorites system (`FavoriteDataSource`, `FavoritesState`, `FavoritesScreen`)
+- Exercise history stub (`HistoryScreen` placeholder)
 
 ### Phase 6 — Authentication Layer ✅ COMPLETED
 
-**Goal:** Add Supabase Auth so each user has their own cloud data.
-
-- [x] Supabase Auth: email/password login and register (`AuthState`, `LoginScreen`)
-- [x] Session management in `commonMain` (`PersistentSessionManager`, `AuthTokenStore` expect/actual)
-- [x] Protected user data (routines, favorites) per account — tied to `userId`
-- [x] Logout flow: clears local state (`RoutineState.reset`, `FavoritesState.reset`), navigates to Login
-
----
+- Supabase Auth: email/password login and register (`AuthState`, `LoginScreen`)
+- Session management in `commonMain` (`PersistentSessionManager`, `AuthTokenStore` expect/actual)
+- User data (routines, favorites) isolated by `userId`
+- Logout flow: clears local state, navigates to Login
 
 ### Phase 7 — Workout Logic Expansion ✅ COMPLETED
 
-**Goal:** Make `WorkoutScreen` a real workout execution experience.
+- Sets/reps/duration tracking per exercise (3 sets × 10 reps)
+- `WorkoutSessionState`: currentIndex, setsCompleted, totalSeconds, restSecondsLeft
+- Progress bar and exercise counter
+- Rest timer — 60s countdown with skip, driven by `LaunchedEffect`
+- Completion summary screen: time elapsed, exercises done, sets done
 
-- [x] Sets/reps/duration tracking per exercise (3 sets × 10 reps, configurable via constants)
-- [x] `WorkoutSessionState` singleton — currentIndex, setsCompleted, totalSetsCompleted, totalSeconds, restSecondsLeft
-- [x] Progress bar and exercise counter (X / N display)
-- [x] Rest timer — 60s countdown with skip option, driven by `LaunchedEffect` tick
-- [x] Completion summary screen — inline in WorkoutScreen: time elapsed, exercises, sets done
+### Phase 7.5 — Multiple Routines ✅ COMPLETED
 
----
-
-### Phase 8 — Architecture Maturation ⏳ FUTURE
-
-**Goal:** Migrate to production-grade state management where complexity warrants it.
-
-- [ ] ViewModel + StateFlow for API-backed screens
-- [ ] `UiState<T>` sealed class for loading/success/error states
-- [ ] Platform-specific `WgerDataSource` for Android/Web (currently JVM-only)
-- [ ] Dependency injection (Koin KMP) if needed
+- `RoutinesScreen` — list of all user routines, create/delete
+- `RoutinesListState` — Compose-observable list of all routines
+- `RoutineRepository` extended: `loadAll`, `createNew`, `delete`
+- Tap a routine → loads into `RoutineState` → opens `MyRoutineScreen`
+- Create new routine → dialog for name → persisted to Supabase immediately
+- Template apply (HomeScreen Quick Start) → creates a new named routine in Supabase
+- Profile stat updated: shows total routine count → navigates to `RoutinesScreen`
 
 ---
 
-### Phase 9 — Full GymSpot Expansion 🚀 LONG TERM
+### Phase 8 — Architecture Maturation 🚫 NOT IN THIS VERSION
+
+- ViewModel + StateFlow for API-backed screens
+- `UiState<T>` sealed class for loading/success/error
+- Platform-specific `WgerDataSource` for Android/Web (currently JVM-only)
+- Dependency injection (Koin KMP)
+
+### Phase 9 — Full GymSpot Expansion 🚫 NOT IN THIS VERSION
 
 - Maps integration (nearby gyms)
 - Social routines
@@ -119,19 +99,13 @@ GymSpot Lite has graduated from a simple practice app to a **MVP+ with productio
 
 ---
 
-## Scope Boundaries (Current MVP)
+## Scope Boundaries
 
-**Won't have until explicitly planned:**
+**Out of scope for this delivery:**
 - Social feed
 - Payments / subscriptions
 - Wearable integrations
 - Real-time multiplayer
 - Large-scale analytics
-
----
-
-## Implementation Reference
-
-- Architecture patterns: `.github/skills/implementation-patterns/SKILL.md`
-- Agent rules and git workflow: `.github/agents/kotlin-developer.agent.md`
-- Development conventions: `CLAUDE.md`
+- ViewModel migration
+- Android/Web WgerDataSource

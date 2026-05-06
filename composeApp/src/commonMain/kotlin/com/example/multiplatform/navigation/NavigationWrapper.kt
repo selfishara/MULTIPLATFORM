@@ -32,12 +32,14 @@ import com.example.multiplatform.screens.HomeScreen
 import com.example.multiplatform.screens.LoginScreen
 import com.example.multiplatform.screens.MyRoutineScreen
 import com.example.multiplatform.screens.ProfileScreen
+import com.example.multiplatform.screens.RoutinesScreen
 import com.example.multiplatform.screens.SettingsScreen
 import com.example.multiplatform.screens.WorkoutScreen
 import com.example.multiplatform.state.AppSettingsState
 import com.example.multiplatform.state.AuthState
 import com.example.multiplatform.state.FavoritesState
 import com.example.multiplatform.state.RoutineState
+import com.example.multiplatform.state.RoutinesListState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -83,6 +85,7 @@ private fun MainContent(
         scope.launch {
             AuthState.logout()
             RoutineState.reset()
+            RoutinesListState.reset()
             FavoritesState.reset()
             backStack.removeAll { true }
             backStack.add(Route.Login)
@@ -91,15 +94,17 @@ private fun MainContent(
 
     LaunchedEffect(AuthState.currentUserId) {
         val userId = AuthState.currentUserId ?: return@LaunchedEffect
-        RoutineState.markLoading(true)
+
+        RoutinesListState.markLoading(true)
         try {
-            val routine = routineRepository.loadOrCreate(userId)
-            RoutineState.loadFromRemote(routine.id, routine.name, routine.exercises)
-            println("[Routine] Loaded '${routine.name}' with ${routine.exercises.size} exercises")
+            val routines = routineRepository.loadAll(userId)
+            RoutinesListState.loadFromRemote(routines)
+            println("[Routines] Loaded ${routines.size} routines")
         } catch (e: Exception) {
-            RoutineState.markLoading(false)
-            println("[Routine] Failed to load: ${e.message}")
+            RoutinesListState.markLoading(false)
+            println("[Routines] Failed to load: ${e.message}")
         }
+
         FavoritesState.markLoading(true)
         try {
             val favs = favoriteDataSource.getFavoritesByUser(userId)
@@ -155,7 +160,7 @@ private fun MainContent(
             entry<Route.Home> {
                 HomeScreen(
                     onStartClick = { backStack.add(Route.Exercises) },
-                    onNavigateToRoutine = { backStack.add(Route.MyRoutine) },
+                    onNavigateToRoutine = { backStack.add(Route.Routines) },
                     onNavigateToFavorites = { backStack.add(Route.Favorites) },
                     onNavigateToHistory = { backStack.add(Route.History) },
                     onNavigateToProfile = { backStack.add(Route.Profile) },
@@ -166,7 +171,13 @@ private fun MainContent(
                     onApplyTemplate = { template ->
                         val resolved = PredefinedRoutines.resolve(template, exercises)
                         if (resolved.isNotEmpty()) {
-                            RoutineState.applyTemplate(resolved)
+                            scope.launch {
+                                val userId = AuthState.currentUserId ?: return@launch
+                                val newRoutine = routineRepository.createNew(userId, template.name)
+                                RoutinesListState.addRoutine(newRoutine)
+                                RoutineState.loadFromRemote(newRoutine.id, template.name, emptyList())
+                                RoutineState.applyTemplate(resolved)
+                            }
                             backStack.add(Route.MyRoutine)
                         }
                     },
@@ -209,6 +220,29 @@ private fun MainContent(
                 )
             }
 
+            entry<Route.Routines> {
+                RoutinesScreen(
+                    onBack = { backStack.removeLastOrNull() },
+                    onOpenRoutine = { routine ->
+                        RoutineState.loadFromRemote(routine.id, routine.name, routine.exercises)
+                        backStack.add(Route.MyRoutine)
+                    },
+                    onCreateNew = { name ->
+                        scope.launch {
+                            val userId = AuthState.currentUserId ?: return@launch
+                            val newRoutine = routineRepository.createNew(userId, name)
+                            RoutinesListState.addRoutine(newRoutine)
+                            RoutineState.loadFromRemote(newRoutine.id, newRoutine.name, emptyList())
+                            backStack.add(Route.MyRoutine)
+                        }
+                    },
+                    onDeleteRoutine = { routineId ->
+                        RoutinesListState.removeRoutine(routineId)
+                        scope.launch { routineRepository.delete(routineId) }
+                    }
+                )
+            }
+
             entry<Route.MyRoutine> {
                 MyRoutineScreen(
                     onBack = { backStack.removeLastOrNull() },
@@ -234,7 +268,9 @@ private fun MainContent(
             entry<Route.Profile> {
                 ProfileScreen(
                     onBack = { backStack.removeLastOrNull() },
-                    onLogout = logoutAndGoToLogin
+                    onLogout = logoutAndGoToLogin,
+                    onNavigateToRoutines = { backStack.add(Route.Routines) },
+                    onNavigateToFavorites = { backStack.add(Route.Favorites) }
                 )
             }
 

@@ -1,35 +1,24 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Agent instructions for Claude Code. For full project context, architecture, and features read **README.md** first.
 
-## Project Overview
-
-**GymSpot Lite** — a Kotlin Multiplatform (KMP) fitness app built with Compose Multiplatform. Targets Android, JVM Desktop, WASM Web, and iOS. Allows users to browse exercises (fetched from the [Wger API](https://wger.de/api/v2/)), create workout routines, and execute workouts. This is an educational/portfolio project — every implementation decision must balance learning clarity, real-world architecture, and scalability.
-
-## Build & Run Commands
+## Build Commands
 
 ```bash
-# Run desktop (JVM)
-./gradlew :composeApp:run
-
-# Build Android debug APK
-./gradlew :composeApp:assembleDebug
-
-# Run JVM tests
-./gradlew :composeApp:jvmTest
-
-# Run web (WASM)
-./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+./gradlew :composeApp:run                          # Desktop (JVM)
+./gradlew :composeApp:assembleDebug                # Android APK
+./gradlew :composeApp:jvmTest                      # JVM tests
+./gradlew :composeApp:wasmJsBrowserDevelopmentRun  # Web (WASM)
 ```
 
-CI runs `assembleDebug` + `jvmTest` on push/PR to `main` (see `.github/workflows/ci-pipeline.yml`). JDK 17 is required.
+CI runs `assembleDebug` + `jvmTest` on push/PR to `main`. JDK 17 required.
 
 ## Git Workflow
 
 - **Never work directly on `main`** — always create a feature branch
 - Branch naming: `feature/<name>`, `fix/<name>`, `refactor/<scope>`
 - Commit prefixes: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
-- Before a PR: build must pass, desktop test required, Android compatibility preserved, no architecture regression
+- Before a PR: build must pass, desktop test required, no architecture regression
 
 ## Agent Behavior Rules
 
@@ -43,60 +32,15 @@ Never make silent changes. Never take these actions without explicit user approv
 
 ## Architecture
 
-### Layer Structure
+Layer structure and data flows are documented in `README.md`. Key rules:
 
-```
-commonMain/kotlin/
-├── data/
-│   ├── remote/          # Wger API (Ktor): WgerApi, WgerDataSource (JVM-only), WgerExerciseRepository
-│   ├── supabase/        # Supabase cache: SupabaseClientProvider, SupabaseExerciseDataSource, SupabaseExerciseRepository
-│   ├── sync/            # ExerciseSyncService — cache-first orchestrator
-│   └── */dto/, */mapper/ # DTOs and domain mappers per data source
-├── model/               # Domain entities: Exercise, ExerciseLanguage, MuscleGroup
-├── state/               # Singleton compose state: RoutineState, AppSettingsState
-├── navigation/          # Navigation3 routes and back-stack logic
-└── screens/ + components/
-```
+- All code and inline comments in **English**
+- No Android-only imports in `commonMain`
+- Keep mutations controlled: expose read-only state, mutate through named methods only
+- `add-to-routine` only in `ExerciseDetailScreen`
+- View and edit mode are separate screens (`MyRoutineScreen` vs `EditRoutineScreen`)
 
-`jvmMain/` contains the actual `WgerDataSource` implementation — other platforms need their own or a shared abstraction.
-
-### Data Flow (Exercise Loading)
-
-1. User selects language → `AppSettingsState.updateExerciseLanguage()`
-2. `NavigationWrapper` `LaunchedEffect` detects change → calls `exerciseRepository.getExercises(language)`
-3. `ExerciseSyncService` checks Supabase first; on cache miss, fetches from Wger API, then upserts into Supabase
-4. Exercises flow down to screens via function parameters
-
-### State Management
-
-MVP-grade: `RoutineState` and `AppSettingsState` are Compose-observable singletons (`mutableStateOf`, `mutableStateListOf`). No ViewModel layer yet — planned for a future phase.
-
-### Navigation
-
-Uses **JetBrains Navigation 3** (`1.0.0-alpha06`) with `@Serializable` route objects. Back stack is managed manually via `rememberNavBackStack()`. Routes are defined as a sealed class in `navigation/Route.kt`. Every new screen requires: a route in `Route.kt`, registration in `NavConfig.kt`, and a wrapper entry in `NavigationWrapper.kt`.
-
-### Supabase Integration
-
-- Client is a singleton in `SupabaseClientProvider.kt` (anon/publishable key is intentionally public)
-- Table: `exercises` (columns: id, name, instructions, muscle_group, language)
-- Operations via PostgREST: `select()` filtered by language code, `upsert()` for bulk cache writes
-
-### Key Domain Types
-
-- `ExerciseLanguage` enum carries both `wgerLanguageId` (int for API filter) and `apiCode` (string for Supabase)
-- `MuscleGroup` enum used for category browsing
-- Wger pagination is capped at 200 exercises (`WgerDataSource`)
-
-## Code Conventions
-
-- All code and inline comments in **English**; project docs may be in Spanish
-- Prefer typed models over raw strings (`MuscleGroup` enum, not `String`)
-- No Android-only imports in `commonMain` shared code
-- Keep mutations controlled: expose read-only views from state objects, mutate through named methods only
-- `add-to-routine` happens in `ExerciseDetailScreen` only — not in category browsing screens
-- View mode and edit mode are separate screens (`MyRoutineScreen` vs `EditRoutineScreen`)
-
-## Adding a New Screen (checklist)
+## Adding a New Screen
 
 1. Add route to `navigation/Route.kt`
 2. Register it in `navigation/NavConfig.kt`
@@ -107,10 +51,10 @@ Uses **JetBrains Navigation 3** (`1.0.0-alpha06`) with `@Serializable` route obj
 ## Coding Standards
 
 - Preserve existing package structure and KMP compatibility
-- Prefer extension over replacement — do not create a second version of something that already exists
-- Document major architecture changes (in commit or PR description, not inline comments)
+- Prefer extension over replacement
 - No random refactors, no silent deletions, no schema breaks without approval
-- Do not overengineer beyond the current development phase (see `PLAN.md`)
+- Do not overengineer beyond the current phase (see `PLAN.md`)
+- No docstrings, comments, or type annotations added to unchanged code
 
 ## Key Dependencies
 
@@ -125,4 +69,4 @@ Uses **JetBrains Navigation 3** (`1.0.0-alpha06`) with `@Serializable` route obj
 
 ## Implementation Patterns Reference
 
-Detailed implementation patterns and step-by-step procedures are in `.github/skills/implementation-patterns/SKILL.md`. Use this when creating new features, adding screens, or following project conventions.
+Detailed patterns: `.github/skills/implementation-patterns/SKILL.md`

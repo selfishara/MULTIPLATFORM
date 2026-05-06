@@ -1,6 +1,7 @@
 package com.example.multiplatform.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,18 +24,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.multiplatform.components.TopBar
 import com.example.multiplatform.state.AuthState
 import com.example.multiplatform.state.FavoritesState
-import com.example.multiplatform.state.RoutineState
+import com.example.multiplatform.state.RoutinesListState
 
 @Composable
 fun ProfileScreen(
     onBack: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToRoutines: () -> Unit,
+    onNavigateToFavorites: () -> Unit
 ) {
     val email = AuthState.currentEmail ?: "Unknown"
     val initials = email.split("@").firstOrNull()?.take(2)?.uppercase() ?: "?"
@@ -92,14 +96,22 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProfileStat(label = "Routine", value = RoutineState.routine.size.toString())
+                    ProfileStat(
+                        label = "Routines",
+                        value = RoutinesListState.routines.size.toString(),
+                        onClick = onNavigateToRoutines
+                    )
                     Box(
                         Modifier
                             .width(1.dp)
                             .height(40.dp)
                             .background(MaterialTheme.colorScheme.outlineVariant)
                     )
-                    ProfileStat(label = "Favorites", value = FavoritesState.favorites.size.toString())
+                    ProfileStat(
+                        label = "Favorites",
+                        value = FavoritesState.favorites.size.toString(),
+                        onClick = onNavigateToFavorites
+                    )
                     Box(
                         Modifier
                             .width(1.dp)
@@ -132,8 +144,22 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileStat(label: String, value: String) {
+private fun ProfileStat(
+    label: String,
+    value: String,
+    onClick: (() -> Unit)? = null
+) {
+    val modifier = if (onClick != null) {
+        Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    } else {
+        Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+    }
+
     Column(
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -141,12 +167,14 @@ private fun ProfileStat(label: String, value: String) {
             text = value,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = if (onClick != null) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = if (onClick != null) MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                    else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

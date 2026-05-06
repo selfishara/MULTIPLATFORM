@@ -8,11 +8,14 @@ class SupabaseRoutineDataSource {
     private val routinesTable = SupabaseClientProvider.client.from("routines")
     private val exercisesTable = SupabaseClientProvider.client.from("routine_exercises")
 
-    suspend fun getRoutineBySession(sessionId: String): RoutineDto? {
+    suspend fun getRoutinesByUser(userId: String): List<RoutineDto> {
         return routinesTable
-            .select { filter { eq("session_id", sessionId) } }
+            .select { filter { eq("session_id", userId) } }
             .decodeList<RoutineDto>()
-            .firstOrNull()
+    }
+
+    suspend fun deleteRoutine(routineId: String) {
+        routinesTable.delete { filter { eq("id", routineId) } }
     }
 
     suspend fun createRoutine(sessionId: String, name: String): RoutineDto {
